@@ -10,7 +10,7 @@ import xyz.mcxross.zero.model.Provider
 import xyz.mcxross.zero.model.ProviderConfig
 import xyz.mcxross.zero.model.TokenInfo
 
-class OAuthClient : Client {
+class DefaultClient : Client {
   private val client = HttpClient(defaultEngine) { install(ContentNegotiation) { json() } }
 
   suspend fun request(
