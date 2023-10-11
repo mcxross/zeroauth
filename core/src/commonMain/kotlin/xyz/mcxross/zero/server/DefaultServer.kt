@@ -1,4 +1,7 @@
 package xyz.mcxross.zero.server
 
-class DefaultServer {
+expect class DefaultServer : Server {
+  override fun start()
+
+  override fun stop()
 }

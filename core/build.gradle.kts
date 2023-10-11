@@ -39,15 +39,16 @@ kotlin {
         implementation("io.ktor:ktor-client-json:2.3.5")
         implementation("io.ktor:ktor-client-auth:2.3.5")
         implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
+
+        implementation("io.ktor:ktor-server-netty:2.3.5")
+        implementation("io.ktor:ktor-server-core:2.3.5")
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
     val jvmMain by getting
     val jvmTest by getting
     val androidMain by getting {
-      dependencies {
-        implementation("io.ktor:ktor-client-okhttp:2.3.5")
-      }
+      dependencies { implementation("io.ktor:ktor-client-okhttp:2.3.5") }
     }
     val jsMain by getting
     val jsTest by getting
