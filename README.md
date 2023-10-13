@@ -1,5 +1,11 @@
 <h1 align="center">0Auth (ZeroAuth) - A Multi-platform zkLogin SDK Suite</h1>
 
+0Auth is a multi-platform SDK suite for zkLogin. It is designed to be easy to use, and easy to integrate into your
+existing projects. It offers a consistent native API across different platforms: use zkLogin with Objective-C on iOS/macOS,
+Kotlin/Java on Android, or C++/C on Windows and Linux.
+
+The libraries meticulously adheres to the best practices delineated in [RFC 8252 - OAuth 2.0 for Native Apps](https://tools.ietf.org/html/rfc8252), employing Custom Tabs for authorization requests on Android and utilizing `SFAuthenticationSession` and `SFSafariViewController` for auth requests on iOS. To maintain stringent usability and security standards, `WebView` on Android, along with `UIWebView` and `WKWebView` on iOS, are explicitly unsupported, as elucidated in [Section 8.12 of RFC 8252](https://tools.ietf.org/html/rfc8252#section-8.12).
+
 [![Build Status](https://travis-ci.org/0auth/0auth.svg?branch=master)](https://travis-ci.org/0auth/0auth)
 ![vcpkg](https://img.shields.io/badge/vcpkg-0auth-blue.svg)
 [![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.0auth/0auth)](https://search.maven.org/artifact/xyz.mcxross.0auth/0auth)
@@ -53,10 +59,6 @@
 
 
 # Introduction
-
-0Auth is a multi-platform SDK suite for zkLogin. It is designed to be easy to use, and easy to integrate into your
-existing projects. It offers a consistent native API across different platforms: use zkLogin with Objective-C on iOS/macOS,
-Kotlin/Java on Android, or C++/C on Windows and Linux.
 
 # Features
 
