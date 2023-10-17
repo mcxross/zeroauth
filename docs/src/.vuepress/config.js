@@ -7,6 +7,9 @@ export default defineUserConfig({
     title: 'ZeroAuth',
     description: 'Multi-platform zkLogin Suite',
     theme: defaultTheme({
+        logo: "/zero-light.svg",
+        logoDark: "/zero-dark.svg",
+        contributors: false,
         navbar: [
             {text: "zkLogin", link: "/zklogin"},
             {
