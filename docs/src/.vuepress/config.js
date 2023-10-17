@@ -2,7 +2,7 @@ import {defineUserConfig} from 'vuepress'
 import {defaultTheme} from 'vuepress'
 
 export default defineUserConfig({
-    base: '/zeroauth/',
+    base: '/',
     lang: 'en-US',
     title: 'ZeroAuth',
     description: 'Multi-platform zkLogin Suite',
