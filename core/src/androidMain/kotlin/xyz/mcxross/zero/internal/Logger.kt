@@ -73,7 +73,7 @@ object Logger {
         log(Log.INFO, tr, message, *messageParams)
     }
 
-    fun warn(message: String, vararg messageParams: Any) {
+    fun warn(message: String, vararg messageParams: Any?) {
         log(Log.WARN, null, message, *messageParams)
     }
 
@@ -89,7 +89,7 @@ object Logger {
         log(Log.ERROR, tr, message, *messageParams)
     }
 
-    private fun log(level: Int, tr: Throwable?, message: String, vararg messageParams: Any) {
+    private fun log(level: Int, tr: Throwable?, message: String, vararg messageParams: Any?) {
         if (mLogLevel > level) {
             return
         }

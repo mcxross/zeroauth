@@ -8,6 +8,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
+import io.ktor.util.reflect.*
 import xyz.mcxross.zero.ZeroAuthConfiguration
 import xyz.mcxross.zero.extension.toAndroidUri
 import xyz.mcxross.zero.internal.Logger
@@ -217,10 +218,9 @@ actual class DefaultAuthorizationService(
       intent.getPackage()!!,
       browserDescriptor.useCustomTab.toString()
     )
-
-    // TODO fix logger for configuration
-    // Logger.debug("Initiating authorization request to %s"
-    // request.configuration.authorizationEndpoint);
+    Logger.debug(
+      "Initiating authorization request to ${if (request is AuthorizationRequest) request.configuration.authorizationEndpoint else if (request is EndSessionRequest) "" else requestUri}"
+    )
     return intent
   }
 

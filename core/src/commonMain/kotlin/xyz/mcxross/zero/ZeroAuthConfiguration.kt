@@ -15,7 +15,6 @@ package xyz.mcxross.zero
 
 import xyz.mcxross.zero.oauth.browser.AnyBrowserMatcher
 import xyz.mcxross.zero.oauth.browser.BrowserMatcher
-import xyz.mcxross.zero.model.Provider
 
 /**
  * Configuration for the ZeroAuth library.
@@ -25,7 +24,6 @@ import xyz.mcxross.zero.model.Provider
  * @param skipIssuerHttpsCheck Whether to skip the HTTPS check on the issuer URI.
  */
 data class ZeroAuthConfiguration(
-  val provider: Provider,
   val browserMatcher: BrowserMatcher = AnyBrowserMatcher.INSTANCE,
   val skipIssuerHttpsCheck: Boolean = false,
 )

@@ -14,5 +14,5 @@
 package xyz.mcxross.zero.model
 
 interface AuthorizationManagementResponse {
-  val state: String
+  val state: String?
 }

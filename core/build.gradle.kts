@@ -76,6 +76,11 @@ android {
     minSdk = 24
     compileSdk = 33
   }
+  sourceSets {
+    named("main") {
+      manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    }
+  }
 }
 
 tasks.getByName<DokkaTask>("dokkaHtml") {

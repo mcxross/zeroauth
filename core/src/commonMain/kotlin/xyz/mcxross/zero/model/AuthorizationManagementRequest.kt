@@ -17,7 +17,7 @@ import com.eygraber.uri.Uri
 
 interface AuthorizationManagementRequest {
 
-  val state: String
+  val state: String?
 
   /** Produces a request URI, that can be used to dispatch the request. */
   fun toUri(): Uri

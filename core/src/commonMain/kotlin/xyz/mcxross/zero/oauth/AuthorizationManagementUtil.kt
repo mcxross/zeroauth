@@ -41,7 +41,7 @@ object AuthorizationManagementUtil {
   ): AuthorizationManagementResponse {
     if (request != null) {
       if (request.instanceOf(AuthorizationRequest::class)) {
-        return AuthorizationResponse.fromUri(uri)
+        return AuthorizationResponse.fromUri(uri, request as AuthorizationRequest)
       }
     }
 

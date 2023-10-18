@@ -13,8 +13,17 @@
  */
 package xyz.mcxross.zero.util
 
+import com.eygraber.uri.Builder
 import com.eygraber.uri.Uri
 
 fun Uri.getQueryParameterAsLong(uri: Uri, param: String): Long? {
   return uri.getQueryParameter(param)?.toLong()
+}
+
+fun Builder.appendQueryParameterIfNotNull(param: String, value: String?): Builder {
+  return if (value != null) {
+    appendQueryParameter(param, value)
+  } else {
+    this
+  }
 }
