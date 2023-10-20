@@ -73,19 +73,19 @@ import xyz.mcxross.zero.model.AuthorizationManagementResponse
  * ```
  *
  * The process begins with an activity requesting that an authorization flow be started, using
- * [AuthorizationService.performAuthorizationRequest] or
- * [AuthorizationService.performEndSessionRequest].
+ * [DefaultAuthorizationService.performAuthorizationRequest] or
+ * [DefaultAuthorizationService.performEndSessionRequest].
  * - Step 1: Using an intent derived from [.createStartIntent], this activity is started. The state
  *   delivered in this intent is recorded for future use.
  * - Step 2: The authorization intent, typically a browser tab, is started. At this point, depending
- *   on user action, we will either end up in a "completion" flow (S) or "cancelation flow" (C).
- * - Cancelation (C) flow:
+ *   on user action, we will either end up in a "completion" flow (S) or "cancellation flow" (C).
+ * - Cancellation (C) flow:
  * - Step C1: If the user presses the back button or otherwise causes the authorization activity to
  *   finish, the AuthorizationManagementActivity will be recreated or restarted.
  * - Step C2a: If a cancellation PendingIntent was provided in the call to
  *   [DefaultAuthorizationService.performAuthorizationRequest] or
  *   [DefaultAuthorizationService.performEndSessionRequest], then this is used to invoke a
- *   cancelation activity.
+ *   cancellation activity.
  * - Step C2b: If no cancellation PendingIntent was provided (legacy behavior, or
  *   AuthorizationManagementActivity was started with an intent from
  *   [DefaultAuthorizationService.getAuthorizationRequestIntent] or

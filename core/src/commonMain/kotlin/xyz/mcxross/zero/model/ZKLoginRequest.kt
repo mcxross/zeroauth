@@ -13,26 +13,12 @@
  */
 package xyz.mcxross.zero.model
 
-interface ProviderConfig {
-  var clientId: String
-  var redirectUri: String
-  var nonce: String
-}
+import kotlinx.serialization.Serializable
 
-data class Google(
-  override var clientId: String,
-  override var redirectUri: String,
-  override var nonce: String
-) : ProviderConfig
-
-data class Facebook(
-  override var clientId: String,
-  override var redirectUri: String,
-  override var nonce: String
-) : ProviderConfig
-
-data class Twitch(
-  override var clientId: String,
-  override var redirectUri: String,
-  override var nonce: String
-) : ProviderConfig
+@Serializable
+data class ZKLoginRequest(
+  val provider: Provider,
+  val clientId: String,
+  val redirectUri: String,
+  val nonce: String,
+)

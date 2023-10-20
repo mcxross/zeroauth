@@ -13,16 +13,23 @@
  */
 package xyz.mcxross.zero.model
 
-enum class Provider {
-  GOOGLE {
-    override fun url(): String = "https://accounts.google.com/o/oauth2/v2/auth"
-  },
-  FACEBOOK {
-    override fun url(): String = "https://www.facebook.com/v17.0/dialog/oauth"
-  },
-  TWITCH {
-    override fun url(): String = "https://id.twitch.tv/oauth2/authorize"
-  };
-
-  abstract fun url(): String
+interface Provider {
+  val authorizationEndpoint: String
+  val tokenEndpoint: String
+  val revocationEndpoint: String?
+  val registrationEndpoint: String?
 }
+
+data class Ghost(
+  override val authorizationEndpoint: String = "",
+  override val tokenEndpoint: String = "",
+  override val revocationEndpoint: String? = null,
+  override val registrationEndpoint: String? = null,
+) : Provider
+
+data class Google(
+  override val authorizationEndpoint: String = "https://accounts.google.com/o/oauth2/v2/auth",
+  override val tokenEndpoint: String = "https://www.googleapis.com/oauth2/v4/token",
+  override val revocationEndpoint: String? = "https://accounts.google.com/o/oauth2/revoke",
+  override val registrationEndpoint: String? = "https://accounts.google.com/o/oauth2/device/code",
+) : Provider

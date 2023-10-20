@@ -31,23 +31,23 @@ import xyz.mcxross.zero.internal.UriUtil
  * easier.
  */
 class CustomTabManager(context: Context) {
-  private val mContextRef: WeakReference<Context>
-  private val mClient: AtomicReference<CustomTabsClient?>
-  private val mClientLatch: CountDownLatch
-  private var mConnection: CustomTabsServiceConnection? = null
+  private val contextRef: WeakReference<Context>
+  private val customTabsClientAtomicReference: AtomicReference<CustomTabsClient?>
+  private val clientLatch: CountDownLatch
+  private var connection: CustomTabsServiceConnection? = null
 
   init {
-    mContextRef = WeakReference(context)
-    mClient = AtomicReference()
-    mClientLatch = CountDownLatch(1)
+    contextRef = WeakReference(context)
+    customTabsClientAtomicReference = AtomicReference()
+    clientLatch = CountDownLatch(1)
   }
 
   @Synchronized
   fun bind(browserPackage: String) {
-    if (mConnection != null) {
+    if (connection != null) {
       return
     }
-    mConnection =
+    connection =
       object : CustomTabsServiceConnection() {
         override fun onServiceDisconnected(componentName: ComponentName) {
           Logger.debug("CustomTabsService is disconnected")
@@ -64,22 +64,22 @@ class CustomTabManager(context: Context) {
         }
 
         private fun setClient(client: CustomTabsClient?) {
-          mClient.set(client)
-          mClientLatch.countDown()
+          customTabsClientAtomicReference.set(client)
+          clientLatch.countDown()
         }
       }
-    val context = mContextRef.get()
+    val context = contextRef.get()
     if (
       context == null ||
         !CustomTabsClient.bindCustomTabsService(
           context,
           browserPackage,
-          mConnection as CustomTabsServiceConnection
+          connection as CustomTabsServiceConnection
         )
     ) {
       // this is expected if the browser does not support custom tabs
       Logger.info("Unable to bind custom tabs service")
-      mClientLatch.countDown()
+      clientLatch.countDown()
     }
   }
 
@@ -96,12 +96,12 @@ class CustomTabManager(context: Context) {
 
   @Synchronized
   fun dispose() {
-    if (mConnection == null) {
+    if (connection == null) {
       return
     }
-    val context = mContextRef.get()
-    context?.unbindService(mConnection!!)
-    mClient.set(null)
+    val context = contextRef.get()
+    context?.unbindService(connection!!)
+    customTabsClientAtomicReference.set(null)
     Logger.debug("CustomTabsService is disconnected")
   }
 
@@ -119,7 +119,7 @@ class CustomTabManager(context: Context) {
       Logger.warn("Failed to create custom tabs session through custom tabs client")
       return null
     }
-    if (possibleUris != null && possibleUris.isNotEmpty()) {
+    if (possibleUris.isNotEmpty()) {
       val additionalUris: List<Bundle> = UriUtil.toCustomTabUriBundle(possibleUris, 1)
       session.mayLaunchUrl(possibleUris[0], null, additionalUris)
     }
@@ -134,12 +134,12 @@ class CustomTabManager(context: Context) {
      */
     get() {
       try {
-        mClientLatch.await(CLIENT_WAIT_TIME, TimeUnit.SECONDS)
+        clientLatch.await(CLIENT_WAIT_TIME, TimeUnit.SECONDS)
       } catch (e: InterruptedException) {
         Logger.info("Interrupted while waiting for browser connection")
-        mClientLatch.countDown()
+        clientLatch.countDown()
       }
-      return mClient.get()
+      return customTabsClientAtomicReference.get()
     }
 
   companion object {

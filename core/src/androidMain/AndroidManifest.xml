@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?xml version="1.0" encoding="UTF-8"?><!--
 * Copyright 2016 McXross. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
@@ -14,30 +13,42 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application>
-        <activity android:name="xyz.mcxross.zero.oauth.AuthorizationManagementActivity"
-                  android:exported="false"
-                  android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
-                  android:theme="@style/Theme.AppCompat.Translucent.NoTitleBar"
-                  android:launchMode="singleTask"/>
+        <activity
+            android:name="xyz.mcxross.zero.oauth.AuthorizationManagementActivity"
+            android:exported="false"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Translucent.NoTitleBar"
+            android:launchMode="singleTask" />
 
-        <activity android:name="xyz.mcxross.zero.oauth.RedirectUriReceiverActivity" android:exported="true">
+        <activity
+            android:name="xyz.mcxross.zero.ZKLoginManagementActivity"
+            android:exported="false"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden"
+            android:theme="@style/Theme.AppCompat.Translucent.NoTitleBar"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name="xyz.mcxross.zero.oauth.RedirectUriReceiverActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="${zeroAuthRedirectScheme}"/>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="${zeroAuthRedirectScheme}" />
             </intent-filter>
         </activity>
     </application>
 
     <queries>
         <intent>
-            <action android:name="android.intent.action.VIEW"/>
-            <category android:name="android.intent.category.BROWSABLE"/>
-            <data android:scheme="https"/>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
         </intent>
     </queries>
 

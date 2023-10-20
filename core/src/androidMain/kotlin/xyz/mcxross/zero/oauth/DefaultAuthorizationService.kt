@@ -21,7 +21,7 @@ import xyz.mcxross.zero.oauth.browser.CustomTabManager
 
 actual class DefaultAuthorizationService(
   val context: Context,
-  val zeroAuthConfiguration: ZeroAuthConfiguration,
+  val zeroAuthConfiguration: ZeroAuthConfiguration = ZeroAuthConfiguration(),
   val customTabManager: CustomTabManager = CustomTabManager(context),
   val browserDescriptor: BrowserDescriptor? =
     BrowserSelector.select(context, zeroAuthConfiguration.browserMatcher),
