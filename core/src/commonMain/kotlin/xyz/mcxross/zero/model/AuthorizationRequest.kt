@@ -317,7 +317,7 @@ data class AuthorizationRequest(
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3>"
    */
-  var responseType: String? = null,
+  var responseType: String,
 
   /**
    * The client's redirect URI.

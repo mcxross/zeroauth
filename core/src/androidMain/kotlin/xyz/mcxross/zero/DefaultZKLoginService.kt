@@ -20,6 +20,7 @@ import xyz.mcxross.zero.model.AuthorizationRequest
 import xyz.mcxross.zero.model.AuthorizationServiceConfiguration
 import xyz.mcxross.zero.model.Ghost
 import xyz.mcxross.zero.model.Provider
+import xyz.mcxross.zero.model.Scope
 import xyz.mcxross.zero.model.ZKLoginRequest
 
 fun zkLoginIntent(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
@@ -37,7 +38,9 @@ fun zkLoginIntent(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
       AuthorizationRequest(
         configuration = authServiceConfig,
         clientId = clientId,
+        responseType = "id_token",
         redirectUri = redirectUri.toUri(),
+        scope = Scope.OpenID,
         nonce = nonce
       )
 

@@ -27,9 +27,30 @@ data class Ghost(
   override val registrationEndpoint: String? = null,
 ) : Provider
 
+data class Facebook(
+  override val authorizationEndpoint: String = "https://www.facebook.com/v2.8/dialog/oauth",
+  override val tokenEndpoint: String = "https://graph.facebook.com/v2.8/oauth/access_token",
+  override val revocationEndpoint: String? = null,
+  override val registrationEndpoint: String? = null,
+) : Provider
+
 data class Google(
   override val authorizationEndpoint: String = "https://accounts.google.com/o/oauth2/v2/auth",
   override val tokenEndpoint: String = "https://www.googleapis.com/oauth2/v4/token",
   override val revocationEndpoint: String? = "https://accounts.google.com/o/oauth2/revoke",
   override val registrationEndpoint: String? = "https://accounts.google.com/o/oauth2/device/code",
+) : Provider
+
+data class Twitch(
+  override val authorizationEndpoint: String = "https://id.twitch.tv/oauth2/authorize",
+  override val tokenEndpoint: String = "https://id.twitch.tv/oauth2/token",
+  override val revocationEndpoint: String? = null,
+  override val registrationEndpoint: String? = null,
+) : Provider
+
+data class Slack(
+  override val authorizationEndpoint: String = "https://slack.com/oauth/authorize",
+  override val tokenEndpoint: String = "https://slack.com/api/oauth.access",
+  override val revocationEndpoint: String? = null,
+  override val registrationEndpoint: String? = null,
 ) : Provider
