@@ -3,10 +3,10 @@ home: true
 title: ZeroAuth
 actions:
   - text: Get Started
-    link: /guide/getting-started/
+    link: /zh/guide/getting-started.html
     type: primary
   - text: Introduction
-    link: /guide/
+    link: /zh/guide/
     type: secondary
 heroImage: /zero-light.svg
 heroImageDark: /zero-dark.svg
