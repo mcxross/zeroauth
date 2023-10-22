@@ -50,7 +50,7 @@ val zkLoginRequest = ZKLoginRequest(Google(), "xyz.mcxross.zero", "xyz.mcxross.z
 Pass the `ZKLoginRequest` object to the `zkLoginIntent` infix function:
 
 ```kotlin
-val intent = this@MainActivity zkLoginRequest zkLoginIntent
+val intent = this@MainActivity zkLoginIntent zkLoginRequest
 ```
 
 Trigger the login process by calling `launch` on the intent:
@@ -76,7 +76,7 @@ class MainActivity : AppCompatActivity() {
     setContentView(R.layout.activity_main)
 
     val zkLoginRequest = ZKLoginRequest(Google(), "xyz.mcxross.zero", "xyz.mcxross.zero.zero_kmp.android")
-    val intent = this@MainActivity zkLoginRequest zkLoginIntent
+    val intent = this@MainActivity zkLoginIntent zkLoginRequest
 
     findViewById<Button>(R.id.button).setOnClickListener {
       zkLoginGoogleResultLauncher.launch(intent)
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       val zkLoginRequest = ZKLoginRequest(Google(), "xyz.mcxross.zero", "xyz.mcxross.zero.zero_kmp.android")
-      val intent = this@MainActivity zkLoginRequest zkLoginIntent
+      val intent = this@MainActivity zkLoginIntent zkLoginRequest
 
       Button(onClick = {
         zkLoginGoogleResultLauncher.launch(intent)
