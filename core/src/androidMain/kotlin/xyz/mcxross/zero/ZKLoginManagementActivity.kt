@@ -65,8 +65,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     if (request != null) {
       val authIntent =
         (authService as DefaultAuthorizationService).getAuthorizationRequestIntent(
-          request as AuthorizationRequest,
-          customTabsIntentAtomicReference.get()
+          request as AuthorizationRequest
         )
       resultLauncher.launch(authIntent)
     }
@@ -119,7 +118,10 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     ): Intent {
       val intent = Intent(context, ZKLoginManagementActivity::class.java)
       intent.putExtra(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), request))
-      Logger.debug("createStartIntent", "KEY_AUTH_REQUEST: ${Json.encodeToString(serializer(), request)}")
+      Logger.debug(
+        "createStartIntent",
+        "KEY_AUTH_REQUEST: ${Json.encodeToString(serializer(), request)}"
+      )
       return intent
     }
   }

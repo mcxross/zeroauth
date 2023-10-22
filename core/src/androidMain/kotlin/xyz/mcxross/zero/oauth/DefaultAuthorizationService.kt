@@ -8,13 +8,13 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
-import io.ktor.util.reflect.*
 import xyz.mcxross.zero.ZeroAuthConfiguration
 import xyz.mcxross.zero.extension.toAndroidUri
 import xyz.mcxross.zero.internal.Logger
 import xyz.mcxross.zero.model.AuthorizationManagementRequest
 import xyz.mcxross.zero.model.AuthorizationRequest
 import xyz.mcxross.zero.model.EndSessionRequest
+import xyz.mcxross.zero.model.toUri
 import xyz.mcxross.zero.oauth.browser.BrowserDescriptor
 import xyz.mcxross.zero.oauth.browser.BrowserSelector
 import xyz.mcxross.zero.oauth.browser.CustomTabManager
@@ -204,7 +204,7 @@ actual class DefaultAuthorizationService(
       throw ActivityNotFoundException()
     }
 
-    val requestUri: Uri = request.toUri().toAndroidUri()
+    val requestUri: Uri = (request as AuthorizationRequest).toUri().toAndroidUri()
     val intent: Intent =
       if (browserDescriptor.useCustomTab) {
         customTabsIntent.intent

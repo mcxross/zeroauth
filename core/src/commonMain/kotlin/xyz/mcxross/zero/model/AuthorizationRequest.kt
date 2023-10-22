@@ -16,6 +16,7 @@ package xyz.mcxross.zero.model
 import com.eygraber.uri.Uri
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.oauth.AdditionalParamsProcessor.builtInParams
+import xyz.mcxross.zero.serializer.UriSerializer
 import xyz.mcxross.zero.util.appendQueryParameterIfNotNull
 
 /**
@@ -32,28 +33,26 @@ sealed class Display(val value: String) {
    * full User Agent page view. If the display parameter is not specified, this is the default
    * display mode.
    */
-  object Page : Display("page")
+  @Serializable data object Page : Display("page")
 
   /**
    * The Authorization Server _SHOULD_ display the authentication and consent UI consistent with a
    * popup User Agent window. The popup User Agent window should be of an appropriate size for a
    * login-focused dialog and should not obscure the entire window that it is popping up over.
    */
-  object Popup : Display("popup")
+  @Serializable data object Popup : Display("popup")
 
   /**
    * The Authorization Server _SHOULD_ display the authentication and consent UI consistent with a
    * device that leverages a touch interface.
    */
-  object Touch : Display("touch")
+  @Serializable data object Touch : Display("touch")
 
   /**
    * The Authorization Server _SHOULD_ display the authentication and consent UI consistent with a
    * "feature phone" type display.
    */
-  object Wap : Display("wap")
-
-  override fun toString(): String = value
+  @Serializable data object Wap : Display("wap")
 }
 
 /**
@@ -82,7 +81,7 @@ sealed class Prompt(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.6>"
    */
-  object None : Prompt("none")
+  @Serializable data object None : Prompt("none")
 
   /**
    * The Authorization Server _SHOULD_ prompt the End-User for re-authentication. If it cannot
@@ -96,7 +95,7 @@ sealed class Prompt(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.6>"
    */
-  object Login : Prompt("login")
+  @Serializable data object Login : Prompt("login")
 
   /**
    * The Authorization Server _SHOULD_ prompt the End-User for consent before returning information
@@ -111,7 +110,7 @@ sealed class Prompt(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.6>"
    */
-  object Consent : Prompt("consent")
+  @Serializable data object Consent : Prompt("consent")
 
   /**
    * The Authorization Server _SHOULD_ prompt the End-User to select a user account. This enables an
@@ -127,9 +126,7 @@ sealed class Prompt(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.6>"
    */
-  object SelectAccount : Prompt("select_account")
-
-  override fun toString(): String = value
+  @Serializable data object SelectAccount : Prompt("select_account")
 }
 
 /**
@@ -148,7 +145,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.4>"
    */
-  object Address : Scope("address")
+  @Serializable data object Address : Scope("address")
 
   /**
    * A scope for the authenticated user's email address.
@@ -157,7 +154,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.4>"
    */
-  object Email : Scope("email")
+  @Serializable data object Email : Scope("email")
 
   /**
    * A scope for requesting an OAuth 2.0 refresh token to be issued, that can be used to obtain an
@@ -168,7 +165,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.11>"
    */
-  object OfflineAccess : Scope("offline_access")
+  @Serializable data object OfflineAccess : Scope("offline_access")
 
   /**
    * A scope for OpenID based authorization.
@@ -177,7 +174,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.1>"
    */
-  object OpenID : Scope("openid")
+  @Serializable data object OpenID : Scope("openid")
 
   /**
    * A scope for the authenticated user's phone number.
@@ -186,7 +183,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.4>"
    */
-  object Phone : Scope("phone")
+  @Serializable data object Phone : Scope("phone")
 
   /**
    * A scope for the authenticated user's basic profile information.
@@ -195,9 +192,7 @@ sealed class Scope(val value: String) {
    *
    * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.4>"
    */
-  object Profile : Scope("profile")
-
-  override fun toString(): String = value
+  @Serializable data object Profile : Scope("profile")
 }
 
 /**
@@ -221,7 +216,7 @@ sealed class ResponseMode(val value: String) {
    *
    * <http://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#rfc.section.2.1>"
    */
-  object Query : ResponseMode("query")
+  @Serializable data object Query : ResponseMode("query")
 
   /**
    * Instructs the authorization server to send response parameters using the fragment portion of
@@ -231,9 +226,7 @@ sealed class ResponseMode(val value: String) {
    *
    * <http://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#rfc.section.2.1>"
    */
-  object Fragment : ResponseMode("fragment")
-
-  override fun toString(): String = value
+  @Serializable data object Fragment : ResponseMode("fragment")
 }
 
 @Serializable
@@ -326,7 +319,7 @@ data class AuthorizationRequest(
    *
    * <https://tools.ietf.org/html/rfc6749#section-3.1.2>"
    */
-  var redirectUri: Uri,
+  @Serializable(with = UriSerializer::class) var redirectUri: Uri,
 
   /**
    * The optional set of scopes expressed as a space-delimited, case-sensitive string.
@@ -446,35 +439,7 @@ data class AuthorizationRequest(
    * <https://tools.ietf.org/html/rfc6749#section-3.1>"
    */
   var additionalParameters: Map<String, String>? = null
-) : AuthorizationManagementRequest {
-
-  override fun toUri(): Uri {
-    val uriBuilder =
-      configuration.authorizationEndpoint
-        .buildUpon()
-        .appendQueryParameter(PARAM_CLIENT_ID, clientId)
-        .appendQueryParameter(PARAM_REDIRECT_URI, redirectUri.toString())
-        .appendQueryParameter(PARAM_RESPONSE_TYPE, responseType)
-        .appendQueryParameterIfNotNull(PARAM_DISPLAY, display?.value)
-        .appendQueryParameterIfNotNull(PARAM_LOGIN_HINT, loginHint)
-        .appendQueryParameterIfNotNull(PARAM_PROMPT, prompt?.value)
-        .appendQueryParameterIfNotNull(PARAM_UI_LOCALES, uiLocales)
-        .appendQueryParameterIfNotNull(PARAM_SCOPE, scope?.value)
-        .appendQueryParameterIfNotNull(PARAM_STATE, state)
-        .appendQueryParameterIfNotNull(PARAM_NONCE, nonce)
-
-    if (codeVerifier != null) {
-      uriBuilder.appendQueryParameter(PARAM_CODE_CHALLENGE, codeVerifierChallenge)
-      uriBuilder.appendQueryParameter(PARAM_CODE_CHALLENGE_METHOD, codeVerifierChallengeMethod)
-    }
-
-    uriBuilder.appendQueryParameterIfNotNull(PARAM_RESPONSE_MODE, responseMode?.value)
-
-    for ((key, value) in additionalParameters ?: emptyMap()) {
-      uriBuilder.appendQueryParameter(key, value)
-    }
-    return uriBuilder.build()
-  }
+) : AuthorizationManagementRequest() {
 
   companion object {
 
@@ -526,4 +491,41 @@ data class AuthorizationRequest(
         PARAM_CLAIMS_LOCALES,
       )
   }
+}
+
+fun AuthorizationRequest.toUri(): Uri {
+  val uriBuilder =
+    configuration.authorizationEndpoint
+      .buildUpon()
+      .appendQueryParameter(AuthorizationRequest.PARAM_CLIENT_ID, clientId)
+      .appendQueryParameter(AuthorizationRequest.PARAM_REDIRECT_URI, redirectUri.toString())
+      .appendQueryParameter(AuthorizationRequest.PARAM_RESPONSE_TYPE, responseType)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_DISPLAY, display?.value)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_LOGIN_HINT, loginHint)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_PROMPT, prompt?.value)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_UI_LOCALES, uiLocales)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_SCOPE, scope?.value)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_STATE, state)
+      .appendQueryParameterIfNotNull(AuthorizationRequest.PARAM_NONCE, nonce)
+
+  if (codeVerifier != null) {
+    uriBuilder.appendQueryParameter(
+      AuthorizationRequest.PARAM_CODE_CHALLENGE,
+      codeVerifierChallenge
+    )
+    uriBuilder.appendQueryParameter(
+      AuthorizationRequest.PARAM_CODE_CHALLENGE_METHOD,
+      codeVerifierChallengeMethod
+    )
+  }
+
+  uriBuilder.appendQueryParameterIfNotNull(
+    AuthorizationRequest.PARAM_RESPONSE_MODE,
+    responseMode?.value
+  )
+
+  for ((key, value) in additionalParameters ?: emptyMap()) {
+    uriBuilder.appendQueryParameter(key, value)
+  }
+  return uriBuilder.build()
 }

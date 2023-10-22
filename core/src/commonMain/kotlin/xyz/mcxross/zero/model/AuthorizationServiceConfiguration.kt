@@ -2,16 +2,17 @@ package xyz.mcxross.zero.model
 
 import com.eygraber.uri.Uri
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.serializer.UriSerializer
 
 @Serializable
 data class AuthorizationServiceConfiguration(
   /** The authorization service's endpoint. */
-  val authorizationEndpoint: Uri,
+  @Serializable(with = UriSerializer::class) val authorizationEndpoint: Uri,
   /** The authorization service's token exchange and refresh endpoint. */
-  val tokenEndpoint: Uri,
+  @Serializable(with = UriSerializer::class) val tokenEndpoint: Uri,
   /** The end session service's endpoint; */
-  val revocationEndpoint: Uri? = null,
+  @Serializable(with = UriSerializer::class) val revocationEndpoint: Uri? = null,
   /** The authorization service's client registration endpoint. */
-  val registrationEndpoint: Uri? = null,
+  @Serializable(with = UriSerializer::class) val registrationEndpoint: Uri? = null,
   val discoveryDoc: AuthorizationServiceDiscovery? = null
 )

@@ -41,6 +41,13 @@ data class Google(
   override val registrationEndpoint: String? = "https://accounts.google.com/o/oauth2/device/code",
 ) : Provider
 
+data class Apple(
+  override val authorizationEndpoint: String = "https://appleid.apple.com/auth/authorize",
+  override val tokenEndpoint: String = "https://appleid.apple.com/auth/token",
+  override val revocationEndpoint: String? = null,
+  override val registrationEndpoint: String? = null,
+) : Provider
+
 data class Twitch(
   override val authorizationEndpoint: String = "https://id.twitch.tv/oauth2/authorize",
   override val tokenEndpoint: String = "https://id.twitch.tv/oauth2/token",

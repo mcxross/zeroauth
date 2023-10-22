@@ -11,12 +11,21 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
+package xyz.mcxross.zero.oauth.browser
 
-import kotlinx.serialization.Serializable
-
-@Serializable
-sealed class AuthorizationManagementRequest {
-
-  abstract val state: String?
+actual object BrowserSelector {
+  /**
+   * Selects a browser to use for authorization.
+   *
+   * @param browserMatcher The [BrowserMatcher] to use when selecting a browser to use for
+   *   authorization.
+   * @param browsers The list of browsers to select from.
+   * @return The [BrowserDescriptor] to use for authorization, or `null` if no browser was selected.
+   */
+  actual fun select(
+    browserMatcher: BrowserMatcher,
+    browsers: List<BrowserDescriptor>
+  ): BrowserDescriptor? {
+    TODO("Not yet implemented")
+  }
 }

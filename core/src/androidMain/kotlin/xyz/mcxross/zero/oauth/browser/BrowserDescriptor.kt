@@ -124,7 +124,9 @@ actual class BrowserDescriptor
     }
 
     private fun getSignatures(packageInfo: PackageInfo): Array<Signature> {
-      return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      return if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && packageInfo.signingInfo != null
+      ) {
         // For API level 28 and above
         if (packageInfo.signingInfo.hasMultipleSigners()) {
           // If the app has multiple signers, return them all

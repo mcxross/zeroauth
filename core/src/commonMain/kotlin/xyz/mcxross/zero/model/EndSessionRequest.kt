@@ -13,7 +13,6 @@
  */
 package xyz.mcxross.zero.model
 
-import com.eygraber.uri.Uri
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.oauth.AdditionalParamsProcessor.builtInParams
 
@@ -24,7 +23,7 @@ data class EndSessionRequest(
   var uiLocales: String,
   var additionalParameters: Map<String, String>,
   override val state: String,
-) : AuthorizationManagementRequest {
+) : AuthorizationManagementRequest() {
   val PARAM_ID_TOKEN_HINT = "id_token_hint"
 
   val PARAM_POST_LOGOUT_REDIRECT_URI = "post_logout_redirect_uri"
@@ -47,8 +46,4 @@ data class EndSessionRequest(
   private val KEY_STATE = "state"
   private val KEY_UI_LOCALES = "ui_locales"
   private val KEY_ADDITIONAL_PARAMETERS = "additionalParameters"
-
-  override fun toUri(): Uri {
-    TODO("Not yet implemented")
-  }
 }

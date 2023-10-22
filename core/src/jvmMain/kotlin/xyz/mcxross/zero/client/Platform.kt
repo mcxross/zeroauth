@@ -11,12 +11,8 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
+package xyz.mcxross.zero.client
 
-import kotlinx.serialization.Serializable
+import io.ktor.client.engine.*
 
-@Serializable
-sealed class AuthorizationManagementRequest {
-
-  abstract val state: String?
-}
+actual val defaultEngine: HttpClientEngine = TODO()
