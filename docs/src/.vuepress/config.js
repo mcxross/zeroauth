@@ -5,7 +5,7 @@ import {docsearchPlugin} from "@vuepress/plugin-docsearch";
 import {googleAnalyticsPlugin} from "@vuepress/plugin-google-analytics";
 
 export default defineUserConfig({
-    base: '/zeroauth/',
+    base: '/',
     lang: 'en-US',
     title: 'ZeroAuth',
     description: 'Simple, multi-platform zkLogin for your (d)app',
