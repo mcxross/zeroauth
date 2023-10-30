@@ -21,5 +21,5 @@ package xyz.mcxross.zero.model
  */
 data class ProvingServiceConfiguration(
   val url: String,
-  val request: ZKProofRequest,
+  val request: ProofRequest,
 )

@@ -13,16 +13,9 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlinx.serialization.Serializable
+import androidx.lifecycle.LiveData
 
-interface ZKProofRequest
-
-@Serializable
-data class DefaultZKProofRequest(
-  val jwtToken: String,
-  val extendedEphemeralPublicKey: String,
-  val maxEpoch: Int,
-  val jwtRandomness: String,
-  val salt: String,
-  val keyClaimName: String,
-) : ZKProofRequest
+data class LiveDataSaltResponse(val liveData: LiveData<SaltResponse?>) : SaltResponseWrapper {
+  override val saltResponse: SaltResponse?
+    get() = liveData.value
+}

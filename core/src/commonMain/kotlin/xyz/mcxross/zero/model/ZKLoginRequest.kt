@@ -13,12 +13,17 @@
  */
 package xyz.mcxross.zero.model
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.login.DefaultProvingService
+import xyz.mcxross.zero.login.DefaultSaltingService
 
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 data class ZKLoginRequest(
-  val provider: Provider,
-  val clientId: String,
-  val redirectUri: String,
-  val nonce: String,
+  val openIDServiceConfiguration: OpenIDServiceConfiguration,
+  val saltingService: SaltingService = DefaultSaltingService(""),
+  val provingService: ProvingService = DefaultProvingService(),
 )

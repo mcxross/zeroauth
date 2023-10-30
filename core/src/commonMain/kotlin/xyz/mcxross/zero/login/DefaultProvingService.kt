@@ -11,15 +11,25 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
+package xyz.mcxross.zero.login
 
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.model.ProofRequest
+import xyz.mcxross.zero.model.ProvingResponseWrapper
+import xyz.mcxross.zero.model.ProvingService
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
-
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+class DefaultProvingService : ProvingService {
+  override var endPoint: String
+    get() = TODO("Not yet implemented")
+    set(value) {}
+
+  override fun prove(input: ProofRequest): ProvingResponseWrapper {
+    TODO("Not yet implemented")
+  }
+
+}

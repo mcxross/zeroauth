@@ -13,11 +13,18 @@
  */
 package xyz.mcxross.zero.model
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
 
-interface SaltRequest
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@Serializable
+sealed class SaltRequest(
+  val jwtToken: String,
+)
 
 @Serializable
 data class DefaultSaltRequest(
-  val jwtToken: String,
-) : SaltRequest
+  val input: String,
+) : SaltRequest(input)

@@ -13,13 +13,6 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlinx.serialization.Serializable
+import androidx.lifecycle.LiveData
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
-
-@Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+class LiveDataProofResponse(val liveData: LiveData<ProofResponse?>) : ProvingResponseWrapper

@@ -13,13 +13,9 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.Flow
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
-
-@Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+data class FlowProofResponse(val flow: Flow<ProofResponse?>) : SaltResponseWrapper {
+  override val saltResponse: SaltResponse?
+    get() = TODO("Not yet implemented")
+}

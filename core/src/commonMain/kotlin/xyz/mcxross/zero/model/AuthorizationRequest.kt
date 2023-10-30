@@ -14,7 +14,10 @@
 package xyz.mcxross.zero.model
 
 import com.eygraber.uri.Uri
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.extension.toUri
 import xyz.mcxross.zero.oauth.AdditionalParamsProcessor.builtInParams
 import xyz.mcxross.zero.serializer.UriSerializer
 import xyz.mcxross.zero.util.appendQueryParameterIfNotNull
@@ -26,6 +29,8 @@ import xyz.mcxross.zero.util.appendQueryParameterIfNotNull
  *
  * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.1>"
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 sealed class Display(val value: String) {
   /**
@@ -62,6 +67,8 @@ sealed class Display(val value: String) {
  *
  * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.1>"
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 sealed class Prompt(val value: String) {
   /**
@@ -136,6 +143,8 @@ sealed class Prompt(val value: String) {
  *
  * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.5.4>"
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 sealed class Scope(val value: String) {
   /**
@@ -206,6 +215,8 @@ sealed class Scope(val value: String) {
  *
  * <https://openid.net/specs/openid-connect-core-1_0.html#rfc.section.3.1.2.1>"
  */
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 sealed class ResponseMode(val value: String) {
   /**
@@ -229,6 +240,8 @@ sealed class ResponseMode(val value: String) {
   @Serializable data object Fragment : ResponseMode("fragment")
 }
 
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
 data class AuthorizationRequest(
   /**
@@ -319,7 +332,7 @@ data class AuthorizationRequest(
    *
    * <https://tools.ietf.org/html/rfc6749#section-3.1.2>"
    */
-  @Serializable(with = UriSerializer::class) var redirectUri: Uri,
+   var redirectUri: String,
 
   /**
    * The optional set of scopes expressed as a space-delimited, case-sensitive string.
@@ -496,6 +509,7 @@ data class AuthorizationRequest(
 fun AuthorizationRequest.toUri(): Uri {
   val uriBuilder =
     configuration.authorizationEndpoint
+      .toUri()
       .buildUpon()
       .appendQueryParameter(AuthorizationRequest.PARAM_CLIENT_ID, clientId)
       .appendQueryParameter(AuthorizationRequest.PARAM_REDIRECT_URI, redirectUri.toString())

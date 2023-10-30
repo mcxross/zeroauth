@@ -17,9 +17,33 @@ import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
+@OptIn(ExperimentalJsExport::class) @JsExport @Serializable data class MaximumEpoch(val value: Int)
 
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+data class EphemeralPublicKey(val value: String)
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@Serializable
+data class Randomness(val value: String)
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@Serializable
+sealed class Nonce {
+  @Serializable
+  data class FromString(val value: String) : Nonce() {
+    override fun toString(): String {
+      return value
+    }
+  }
+
+  @Serializable
+  data class FromComponents(
+    val maximumEpoch: MaximumEpoch,
+    val ephemeralPublicKey: EphemeralPublicKey,
+    val randomness: Randomness
+  ) : Nonce()
+}

@@ -123,47 +123,44 @@ class AuthorizationManagementActivity : AppCompatActivity() {
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    if (savedInstanceState == null) {
-      extractState(intent.extras)
-    } else {
-      extractState(savedInstanceState)
-    }
+    extractState(savedInstanceState ?: intent.extras)
   }
 
   override fun onResume() {
     super.onResume()
 
-    /*
-     * If this is the first run of the activity, start the authorization intent.
-     * Note that we do not finish the activity at this point, in order to remain on the back
-     * stack underneath the authorization activity.
-     */
-    if (!authorizationStarted) {
-      try {
-        startActivity(authIntent)
-        authorizationStarted = true
-      } catch (e: ActivityNotFoundException) {
-        handleBrowserNotFound()
+    when {
+      // If this is the first run of the activity, start the authorization intent.
+      // Note that we do not finish the activity at this point, in order to remain on the back
+      // stack underneath the authorization activity.
+      !authorizationStarted -> startAuthorizationIntent()
+
+      // On a subsequent run, it must be determined whether we have returned to this activity
+      // due to an OAuth2 redirect, or the user canceling the authorization flow. This can
+      // be done by checking whether a response URI is available, which would be provided by
+      // RedirectUriReceiverActivity. If it is not, we have returned here due to the user
+      // pressing the back button, or the authorization activity finishing without
+      // RedirectUriReceiverActivity having been invoked - this can occur when the user presses
+      // the back button, or closes the browser tab.
+      intent.data != null -> {
+        handleAuthorizationComplete()
         finish()
       }
-      return
+      else -> {
+        handleAuthorizationCanceled()
+        finish()
+      }
     }
+  }
 
-    /*
-     * On a subsequent run, it must be determined whether we have returned to this activity
-     * due to an OAuth2 redirect, or the user canceling the authorization flow. This can
-     * be done by checking whether a response URI is available, which would be provided by
-     * RedirectUriReceiverActivity. If it is not, we have returned here due to the user
-     * pressing the back button, or the authorization activity finishing without
-     * RedirectUriReceiverActivity having been invoked - this can occur when the user presses
-     * the back button, or closes the browser tab.
-     */
-    if (intent.data != null) {
-      handleAuthorizationComplete()
-    } else {
-      handleAuthorizationCanceled()
+  private fun startAuthorizationIntent() {
+    try {
+      startActivity(authIntent)
+      authorizationStarted = true
+    } catch (e: ActivityNotFoundException) {
+      handleBrowserNotFound()
+      finish()
     }
-    finish()
   }
 
   override fun onNewIntent(intent: Intent?) {
@@ -173,15 +170,16 @@ class AuthorizationManagementActivity : AppCompatActivity() {
 
   override fun onSaveInstanceState(outState: Bundle) {
     super.onSaveInstanceState(outState)
-    outState.putBoolean(KEY_AUTHORIZATION_STARTED, authorizationStarted)
-    outState.putParcelable(KEY_AUTH_INTENT, authIntent)
-    outState.putString(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), authRequest))
-    outState.putString(
-      KEY_AUTH_REQUEST_TYPE,
-      AuthorizationManagementUtil.requestTypeFor(authRequest)
-    )
-    outState.putParcelable(KEY_COMPLETE_INTENT, completeIntent)
-    outState.putParcelable(KEY_CANCEL_INTENT, cancelIntent)
+    with(outState) {
+      putBoolean(KEY_AUTHORIZATION_STARTED, authorizationStarted)
+      putParcelable(KEY_AUTH_INTENT, authIntent)
+      authRequest?.let {
+        putString(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), it))
+        putString(KEY_AUTH_REQUEST_TYPE, AuthorizationManagementUtil.requestTypeFor(it))
+      }
+      putParcelable(KEY_COMPLETE_INTENT, completeIntent)
+      putParcelable(KEY_CANCEL_INTENT, cancelIntent)
+    }
   }
 
   private fun handleAuthorizationComplete() {
@@ -252,38 +250,45 @@ class AuthorizationManagementActivity : AppCompatActivity() {
     }
   }
 
-  private fun sendResult(callback: PendingIntent?, cancelData: Intent, resultCode: Int) {
-    if (callback != null) {
+  private fun sendResult(callback: PendingIntent?, cancelData: Intent, resultCode: Int) =
+    callback?.let {
       try {
-        callback.send(this, 0, cancelData)
+        it.send(this, 0, cancelData)
       } catch (e: PendingIntent.CanceledException) {
         Logger.error("Failed to send cancel intent", e)
       }
-    } else {
-      setResult(resultCode, cancelData)
-    }
-  }
+    } ?: setResult(resultCode, cancelData)
 
   private fun extractResponseData(responseUri: Uri?): Intent {
+    val safeResponseUri =
+      responseUri ?: throw IllegalArgumentException("Response URI cannot be null")
+
     return if (
-      responseUri!!.getQueryParameterNames().contains(AuthorizationException.PARAM_ERROR)
+      safeResponseUri.getQueryParameterNames().contains(AuthorizationException.PARAM_ERROR)
     ) {
-      AuthorizationException.fromOAuthRedirect(responseUri.toZeroUri()).toIntent()
+      AuthorizationException.fromOAuthRedirect(safeResponseUri.toZeroUri()).toIntent()
     } else {
-      val response: AuthorizationManagementResponse =
-        AuthorizationManagementUtil.responseWith(authRequest, responseUri.toZeroUri())
-      if (
-        authRequest!!.state == null && response.state != null ||
-          authRequest!!.state != null && authRequest!!.state != response.state
-      ) {
-        Logger.warn(
-          "State returned in authorization response (%s) does not match state " +
-            "from request (%s) - discarding response",
-          response.state,
-          authRequest!!.state
-        )
-        return AuthorizationException.AuthorizationRequestErrors.STATE_MISMATCH.toIntent()
-      }
+      val response =
+        AuthorizationManagementUtil.responseWith(authRequest, safeResponseUri.toZeroUri())
+
+      authRequest
+        ?.state
+        .let { requestState ->
+          when {
+            requestState == null && response.state != null -> true
+            requestState != null && requestState != response.state -> true
+            else -> false
+          }
+        }
+        .takeIf { it }
+        ?.let {
+          Logger.warn(
+            "State returned in authorization response (%s) does not match state from request (%s) - discarding response",
+            response.state,
+            authRequest?.state
+          )
+          return AuthorizationException.AuthorizationRequestErrors.STATE_MISMATCH.toIntent()
+        }
       response.toIntent()
     }
   }
@@ -316,15 +321,16 @@ class AuthorizationManagementActivity : AppCompatActivity() {
       authIntent: Intent?,
       completeIntent: PendingIntent?,
       cancelIntent: PendingIntent?
-    ): Intent {
-      val intent: Intent = createBaseIntent(context)
-      intent.putExtra(KEY_AUTH_INTENT, authIntent)
-      intent.putExtra(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), request))
-      intent.putExtra(KEY_AUTH_REQUEST_TYPE, AuthorizationManagementUtil.requestTypeFor(request))
-      intent.putExtra(KEY_COMPLETE_INTENT, completeIntent)
-      intent.putExtra(KEY_CANCEL_INTENT, cancelIntent)
-      return intent
-    }
+    ): Intent =
+      createBaseIntent(context).apply {
+        putExtra(KEY_AUTH_INTENT, authIntent)
+        request.let {
+          putExtra(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), it))
+          putExtra(KEY_AUTH_REQUEST_TYPE, AuthorizationManagementUtil.requestTypeFor(it))
+        }
+        putExtra(KEY_COMPLETE_INTENT, completeIntent)
+        putExtra(KEY_CANCEL_INTENT, cancelIntent)
+      }
 
     /**
      * Creates an intent to start an authorization flow.
@@ -337,9 +343,7 @@ class AuthorizationManagementActivity : AppCompatActivity() {
       context: Context,
       request: AuthorizationManagementRequest,
       authIntent: Intent?
-    ): Intent {
-      return createStartIntent(context, request, authIntent, null, null)
-    }
+    ): Intent = createStartIntent(context, request, authIntent, null, null)
 
     /**
      * Creates an intent to handle the completion of an authorization flow. This restores the
@@ -348,15 +352,13 @@ class AuthorizationManagementActivity : AppCompatActivity() {
      * @param context the package context for the app.
      * @param responseUri the response URI, which carries the parameters describing the response.
      */
-    fun createResponseHandlingIntent(context: Context, responseUri: Uri?): Intent {
-      val intent: Intent = createBaseIntent(context)
-      intent.setData(responseUri)
-      intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-      return intent
-    }
+    fun createResponseHandlingIntent(context: Context, responseUri: Uri?): Intent =
+      createBaseIntent(context).apply {
+        setData(responseUri)
+        addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+      }
 
-    private fun createBaseIntent(context: Context): Intent {
-      return Intent(context, AuthorizationManagementActivity::class.java)
-    }
+    private fun createBaseIntent(context: Context): Intent =
+      Intent(context, AuthorizationManagementActivity::class.java)
   }
 }

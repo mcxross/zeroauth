@@ -21,6 +21,7 @@ import xyz.mcxross.zero.model.AuthorizationManagementResponse
 import xyz.mcxross.zero.model.AuthorizationResponse
 import xyz.mcxross.zero.model.AuthorizationResponse.Companion.EXTRA_RESPONSE
 import xyz.mcxross.zero.model.ZKLoginRequest
+import xyz.mcxross.zero.model.ZKLoginResponse
 
 fun AuthorizationResponse.Companion.fromIntent(dataIntent: Intent): AuthorizationResponse? {
   val jsonStr = dataIntent.getStringExtra(EXTRA_RESPONSE)
@@ -32,11 +33,11 @@ fun AuthorizationResponse.Companion.fromIntent(dataIntent: Intent): Authorizatio
  * authorization response to the registered handler after a call to {@link
  * AuthorizationService#performAuthorizationRequest}.
  */
-fun AuthorizationManagementResponse.toIntent(): Intent {
-  val data = Intent()
-  data.putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this))
-  return data
-}
+fun AuthorizationManagementResponse.toIntent(): Intent =
+  Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
 
-infix fun Context.zkLoginIntent(request: ZKLoginRequest): Intent =
-  xyz.mcxross.zero.zkLoginIntent(this, request)
+infix fun Context.zkLogin(request: ZKLoginRequest): Intent =
+  xyz.mcxross.zero.zkLogin(this, request)
+
+fun ZKLoginResponse.toIntent(): Intent =
+  Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }

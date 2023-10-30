@@ -11,19 +11,22 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.zk
+package xyz.mcxross.zero.model
 
-import xyz.mcxross.zero.client.DefaultClient
-import xyz.mcxross.zero.model.ProvingServiceConfiguration
-import xyz.mcxross.zero.model.ZKProofResponse
+import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
-object ProvingService {
-  private val provingClient = DefaultClient()
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+interface ProofRequest
 
-  suspend fun request(provingServiceConfiguration: ProvingServiceConfiguration): ZKProofResponse {
-    return provingClient.request(
-      provingServiceConfiguration.url,
-      provingServiceConfiguration.request,
-    )
-  }
-}
+@Serializable
+data class DefaultProofRequest(
+  val jwtToken: String,
+  val extendedEphemeralPublicKey: String,
+  val maxEpoch: Int,
+  val jwtRandomness: String,
+  val salt: String,
+  val keyClaimName: String,
+) : ProofRequest

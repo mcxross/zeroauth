@@ -13,13 +13,22 @@
  */
 package xyz.mcxross.zero.model
 
+import kotlinx.serialization.Serializable
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
-import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+interface ProofResponse
 
 @Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+data class ProofPoints(val a: List<String>, val b: List<List<String>>, val c: List<String>)
+
+@Serializable data class IssBase64Details(val value: String, val indexMod4: Int)
+
+@Serializable
+data class DefaultProofResponse(
+  val proofPoints: ProofPoints,
+  val issBase64Details: IssBase64Details,
+  val headerBase64: String
+) : ProofResponse

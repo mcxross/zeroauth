@@ -17,9 +17,12 @@ import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
-
+@OptIn(ExperimentalJsExport::class)
+@JsExport
 @Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+data class OpenIDServiceConfiguration(
+  val provider: Provider,
+  val clientId: String,
+  val redirectUri: String,
+  val nonce: Nonce,
+)

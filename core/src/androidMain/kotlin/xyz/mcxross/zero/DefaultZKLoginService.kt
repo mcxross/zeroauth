@@ -15,66 +15,61 @@ package xyz.mcxross.zero
 
 import android.content.Context
 import android.content.Intent
-import xyz.mcxross.zero.extension.toUri
-import xyz.mcxross.zero.model.AuthorizationRequest
-import xyz.mcxross.zero.model.AuthorizationServiceConfiguration
+import xyz.mcxross.zero.login.AndroidDefaultSaltingService
+import xyz.mcxross.zero.login.DefaultProvingService
+import xyz.mcxross.zero.login.DefaultSaltingService
 import xyz.mcxross.zero.model.Ghost
+import xyz.mcxross.zero.model.Nonce
+import xyz.mcxross.zero.model.OpenIDServiceConfiguration
 import xyz.mcxross.zero.model.Provider
-import xyz.mcxross.zero.model.Scope
+import xyz.mcxross.zero.model.ProvingService
+import xyz.mcxross.zero.model.SaltingService
+import xyz.mcxross.zero.model.ServiceHolder
 import xyz.mcxross.zero.model.ZKLoginRequest
 
-fun zkLoginIntent(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
-
-  return with(zkLoginRequest) {
-    val authServiceConfig =
-      AuthorizationServiceConfiguration(
-        provider.authorizationEndpoint.toUri(),
-        provider.tokenEndpoint.toUri(),
-        provider.revocationEndpoint?.toUri(),
-        provider.registrationEndpoint?.toUri()
-      )
-
-    val authRequest =
-      AuthorizationRequest(
-        configuration = authServiceConfig,
-        clientId = clientId,
-        responseType = "id_token",
-        redirectUri = redirectUri.toUri(),
-        scope = Scope.OpenID,
-        nonce = nonce
-      )
-
-    ZKLoginManagementActivity.createStartIntent(context, authRequest)
-  }
+fun zkLogin(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
+  return ServiceHolder.apply {
+      saltingService =
+        when (zkLoginRequest.saltingService) {
+          is DefaultSaltingService -> // Switch to Android-specific implementation
+          AndroidDefaultSaltingService(zkLoginRequest.saltingService.endPoint)
+          else -> // Okay, we hope the user knows what they're doing, proceed as normal
+          zkLoginRequest.saltingService
+        }
+      provingService = zkLoginRequest.provingService
+    }
+    .run { ZKLoginManagementActivity.createStartIntent(context, zkLoginRequest) }
 }
 
-actual class DefaultZKLoginService : ZKLoginService {
+actual class DefaultZKLoginService(private val context: Context) : ZKLoginService {
+  override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent =
+    zkLogin(context, zkLoginRequest)
 
-  fun zkLoginIntent(context: Context, zkLoginRequest: ZKLoginRequest): Intent =
-    xyz.mcxross.zero.zkLoginIntent(context, zkLoginRequest)
-
-  fun zkLoginIntent(context: Context, configAction: ZKLoginRequestConfig.() -> Unit): Intent {
+  fun zkLogin(configAction: ZKLoginRequestConfig.() -> Unit): Intent {
     val requestWrapper = ZKLoginRequestConfig().apply(configAction)
     val request =
       with(requestWrapper) {
         ZKLoginRequest(
-          clientId = clientId,
-          redirectUri = redirectUri,
-          nonce = nonce,
-          provider = provider
+          openIDServiceConfiguration =
+            OpenIDServiceConfiguration(
+              clientId = clientId,
+              redirectUri = redirectUri,
+              nonce = nonce,
+              provider = provider,
+            ),
+          saltingService = saltingService,
+          provingService = provingService
         )
       }
-    return zkLoginIntent(context, request)
-  }
-
-  actual override fun performLogin() {
-    TODO()
+    return zkLogin(context, request)
   }
 }
 
 class ZKLoginRequestConfig {
+  var provider: Provider = Ghost()
   var clientId: String = ""
   var redirectUri: String = ""
-  var nonce: String = ""
-  var provider: Provider = Ghost()
+  var nonce: Nonce = Nonce.FromString("")
+  var saltingService: SaltingService = AndroidDefaultSaltingService("")
+  var provingService: ProvingService = DefaultProvingService()
 }

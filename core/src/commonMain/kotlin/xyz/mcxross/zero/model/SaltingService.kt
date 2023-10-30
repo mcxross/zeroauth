@@ -13,18 +13,12 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlinx.serialization.Serializable
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
 
-interface ZKProofResponse
-
-@Serializable
-data class ProofPoints(val a: List<String>, val b: List<List<String>>, val c: List<String>)
-
-@Serializable data class IssBase64Details(val value: String, val indexMod4: Int)
-
-@Serializable
-data class DefaultZKProofResponse(
-  val proofPoints: ProofPoints,
-  val issBase64Details: IssBase64Details,
-  val headerBase64: String
-) : ZKProofResponse
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+interface SaltingService {
+  var endPoint: String
+  fun salt(input: SaltRequest): SaltResponseWrapper
+}

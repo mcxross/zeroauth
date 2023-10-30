@@ -15,11 +15,5 @@ package xyz.mcxross.zero.model
 
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
-import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable sealed class SaltResponse
-
-@Serializable
-data class DefaultSaltResponse(
-  val salt: String,
-) : SaltResponse()
+@OptIn(ExperimentalJsExport::class) @JsExport interface ProvingResponseWrapper
