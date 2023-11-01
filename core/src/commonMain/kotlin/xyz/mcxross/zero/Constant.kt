@@ -11,11 +11,10 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.provider
+package xyz.mcxross.zero
 
-actual class Google : Provider {
-  actual override fun prompt(): String? {
-
-    return "Hello from Android!"
-  }
+object Constant {
+  const val SALTING_SERVICE_FAIL = 2000
+  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
+  const val PROVING_SERVICE_FAIL = 3000
 }

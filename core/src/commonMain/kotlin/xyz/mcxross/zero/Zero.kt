@@ -13,6 +13,40 @@
  */
 package xyz.mcxross.zero
 
-/*fun provider(provider: Provider, block: ProviderConfig.() -> Unit): Provider {
-  // TODO: implement
-}*/
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.plus
+import kotlinx.serialization.modules.polymorphic
+import kotlinx.serialization.modules.subclass
+import xyz.mcxross.zero.model.Apple
+import xyz.mcxross.zero.model.Facebook
+import xyz.mcxross.zero.model.Ghost
+import xyz.mcxross.zero.model.Google
+import xyz.mcxross.zero.model.Provider
+import xyz.mcxross.zero.model.Slack
+import xyz.mcxross.zero.model.Twitch
+
+expect val zeroSerializationModule: SerializersModule
+
+val commonSerializersModule = SerializersModule {
+  polymorphic(Provider::class) {
+    subclass(Google::class)
+    subclass(Facebook::class)
+    subclass(Ghost::class)
+    subclass(Twitch::class)
+    subclass(Apple::class)
+    subclass(Slack::class)
+  }
+}
+
+object Zero {
+  private val serializers = mutableListOf(zeroSerializationModule, commonSerializersModule)
+
+  val json =
+    kotlinx.serialization.json.Json {
+      serializersModule = serializers.reduce { acc, serializersModule -> acc + serializersModule }
+    }
+
+  operator fun plusAssign(serializersModule: SerializersModule) {
+    serializers.add(serializersModule)
+  }
+}

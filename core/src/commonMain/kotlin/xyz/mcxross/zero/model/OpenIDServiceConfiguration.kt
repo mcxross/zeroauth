@@ -24,5 +24,5 @@ data class OpenIDServiceConfiguration(
   val provider: Provider,
   val clientId: String,
   val redirectUri: String,
-  val nonce: Nonce,
+  val nonce: Nonce = Nonce.FromString(""),
 )

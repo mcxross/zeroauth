@@ -15,7 +15,7 @@ package xyz.mcxross.zero.model
 
 import kotlinx.coroutines.flow.Flow
 
-data class FlowProofResponse(val flow: Flow<ProofResponse?>) : SaltResponseWrapper {
-  override val saltResponse: SaltResponse?
-    get() = TODO("Not yet implemented")
+data class FlowProofResponse(val flow: Flow<ProofResponse?>) : ProvingResponseWrapper {
+  val proofResponse: ProofResponse?
+    get() = null
 }

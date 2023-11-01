@@ -11,8 +11,12 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.provider
+package xyz.mcxross.zero
 
-interface Provider {
-  fun prompt(): String?
+object Mysten {
+
+  const val MYSTEN_LABS_SALTING_SERVICE_URL = "https://salt.api.mystenlabs.com/get_salt"
+
+  const val MYSTEN_LABS_PROVING_SERVICE_URL = "https://prover.mystenlabs.com/v1"
+  const val MYSTEN_LABS_PROVING_SERVICE_DEV_URL = "https://prover-dev.mystenlabs.com/v1"
 }

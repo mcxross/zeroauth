@@ -17,7 +17,7 @@ import xyz.mcxross.zero.oauth.browser.AnyBrowserMatcher
 import xyz.mcxross.zero.oauth.browser.BrowserMatcher
 
 /**
- * Configuration for the ZeroAuth library.
+ * Configuration for the Constant library.
  *
  * @param browserMatcher The [BrowserMatcher] to use when selecting a browser to use for
  *   authorization.

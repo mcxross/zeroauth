@@ -15,16 +15,18 @@ package xyz.mcxross.zero.model
 
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
+import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 interface Provider {
-  val authorizationEndpoint: String
-  val tokenEndpoint: String
-  val revocationEndpoint: String?
-  val registrationEndpoint: String?
+   val authorizationEndpoint: String
+   val tokenEndpoint: String
+   val revocationEndpoint: String?
+   val registrationEndpoint: String?
 }
 
+@Serializable
 data class Ghost(
   override val authorizationEndpoint: String = "",
   override val tokenEndpoint: String = "",
@@ -32,6 +34,7 @@ data class Ghost(
   override val registrationEndpoint: String? = null,
 ) : Provider
 
+@Serializable
 data class Facebook(
   override val authorizationEndpoint: String = "https://www.facebook.com/v2.8/dialog/oauth",
   override val tokenEndpoint: String = "https://graph.facebook.com/v2.8/oauth/access_token",
@@ -39,6 +42,7 @@ data class Facebook(
   override val registrationEndpoint: String? = null,
 ) : Provider
 
+@Serializable
 data class Google(
   override val authorizationEndpoint: String = "https://accounts.google.com/o/oauth2/v2/auth",
   override val tokenEndpoint: String = "https://www.googleapis.com/oauth2/v4/token",
@@ -46,6 +50,7 @@ data class Google(
   override val registrationEndpoint: String? = "https://accounts.google.com/o/oauth2/device/code",
 ) : Provider
 
+@Serializable
 data class Apple(
   override val authorizationEndpoint: String = "https://appleid.apple.com/auth/authorize",
   override val tokenEndpoint: String = "https://appleid.apple.com/auth/token",
@@ -53,6 +58,7 @@ data class Apple(
   override val registrationEndpoint: String? = null,
 ) : Provider
 
+@Serializable
 data class Twitch(
   override val authorizationEndpoint: String = "https://id.twitch.tv/oauth2/authorize",
   override val tokenEndpoint: String = "https://id.twitch.tv/oauth2/token",
@@ -60,6 +66,7 @@ data class Twitch(
   override val registrationEndpoint: String? = null,
 ) : Provider
 
+@Serializable
 data class Slack(
   override val authorizationEndpoint: String = "https://slack.com/oauth/authorize",
   override val tokenEndpoint: String = "https://slack.com/api/oauth.access",

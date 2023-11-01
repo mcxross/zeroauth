@@ -15,21 +15,25 @@ package xyz.mcxross.zero.login
 
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
-import kotlinx.serialization.Serializable
+import kotlinx.coroutines.flow.flow
+import xyz.mcxross.zero.client.DefaultClient
+import xyz.mcxross.zero.model.FlowProofResponse
 import xyz.mcxross.zero.model.ProofRequest
+import xyz.mcxross.zero.model.ProofResponse
 import xyz.mcxross.zero.model.ProvingResponseWrapper
 import xyz.mcxross.zero.model.ProvingService
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-@Serializable
-class DefaultProvingService : ProvingService {
-  override var endPoint: String
-    get() = TODO("Not yet implemented")
-    set(value) {}
+class DefaultProvingService(override var endPoint: String) : ProvingService {
 
-  override fun prove(input: ProofRequest): ProvingResponseWrapper {
-    TODO("Not yet implemented")
-  }
+  private val client = DefaultClient()
 
+  override fun prove(input: ProofRequest): ProvingResponseWrapper =
+    FlowProofResponse(
+      flow {
+        val response = client.request<String, ProofResponse>(endPoint, input.toString())
+        emit(response)
+      }
+    )
 }

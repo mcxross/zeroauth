@@ -17,5 +17,5 @@ import kotlinx.coroutines.flow.Flow
 
 data class FlowSaltResponse(val flow: Flow<SaltResponse?>) : SaltResponseWrapper {
   override val saltResponse: SaltResponse?
-    get() = TODO("Not yet implemented")
+    get() = null
 }
