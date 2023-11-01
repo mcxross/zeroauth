@@ -10,4 +10,15 @@ export const sidebarEn = {
             ],
         },
     ],
+    '/platform/android': [
+        {
+            text: 'Android',
+            children: [
+                '/platform/android/introduction',
+                '/platform/android/conceptual-overview',
+                '/platform/android/quick-start',
+            ]
+
+        }
+    ],
 };
