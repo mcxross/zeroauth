@@ -150,7 +150,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
 
     if (saltingService == null) {
       Logger.warn(TAG, "SaltingService is null, terminating with data: $data")
-      sendResult(ZeroAuth.SALTING_FAIL_SERVICE_NOT_DEFINED, data)
+      sendResult(Constant.SALTING_FAIL_SERVICE_NOT_DEFINED, data)
       // We can now terminate the activity
       finish()
     }
@@ -197,7 +197,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
 
     if (provingService == null) {
       Logger.warn(TAG, "ProvingService is null, terminating with data: $data")
-      sendResult(ZeroAuth.PROVING_SERVICE_FAIL, data)
+      sendResult(Constant.PROVING_SERVICE_FAIL, data)
       // We can now terminate the activity
       finish()
     }
@@ -228,7 +228,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
       }
     } else {
       Logger.warn(TAG, "ProvingResponseWrapper is not LiveDataProofResponse, failing")
-      sendResult(ZeroAuth.PROVING_SERVICE_FAIL, null)
+      sendResult(Constant.PROVING_SERVICE_FAIL, null)
       finish()
     }
     return proofResponse!!

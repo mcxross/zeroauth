@@ -41,9 +41,27 @@ fun zkLogin(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
     .run { ZKLoginManagementActivity.createStartIntent(context, zkLoginRequest) }
 }
 
+fun zkLogin(context: Context, configAction: ZKLoginRequestConfig.() -> Unit): Intent {
+  val requestWrapper = ZKLoginRequestConfig().apply(configAction)
+  val request =
+    with(requestWrapper) {
+      ZKLoginRequest(
+        openIDServiceConfiguration =
+          OpenIDServiceConfiguration(
+            clientId = clientId,
+            redirectUri = redirectUri,
+            nonce = nonce,
+            provider = provider,
+          ),
+        saltingService = saltingService,
+        provingService = provingService
+      )
+    }
+  return zkLogin(context, request)
+}
+
 actual class DefaultZKLoginService(private val context: Context) : ZKLoginService {
-  override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent =
-    zkLogin(context, zkLoginRequest)
+  override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent = zkLogin(context, zkLoginRequest)
 
   fun zkLogin(configAction: ZKLoginRequestConfig.() -> Unit): Intent {
     val requestWrapper = ZKLoginRequestConfig().apply(configAction)
@@ -70,6 +88,7 @@ class ZKLoginRequestConfig {
   var clientId: String = ""
   var redirectUri: String = ""
   var nonce: Nonce = Nonce.FromString("")
-  var saltingService: SaltingService = AndroidDefaultSaltingService("")
-  var provingService: ProvingService = DefaultProvingService()
+  var saltingService: SaltingService =
+    AndroidDefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL)
+  var provingService: ProvingService = DefaultProvingService(Mysten.MYSTEN_LABS_PROVING_SERVICE_URL)
 }
