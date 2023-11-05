@@ -11,26 +11,24 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlin.js.JsName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
-import xyz.mcxross.zero.Mysten.MYSTEN_LABS_PROVING_SERVICE_URL
-import xyz.mcxross.zero.Mysten.MYSTEN_LABS_SALTING_SERVICE_URL
+import xyz.mcxross.zero.Mysten
 import xyz.mcxross.zero.login.DefaultProvingService
 import xyz.mcxross.zero.login.DefaultSaltingService
+import xyz.mcxross.zero.model.ProvingService
+import xyz.mcxross.zero.model.SaltingService
+import xyz.mcxross.zero.model.ZKLoginRequest
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-@JsName("ZKLoginRequest")
-@Serializable
-data class ZKLoginRequest(
-  val openIDServiceConfiguration: OpenIDServiceConfiguration,
-  @Transient
-  val saltingService: SaltingService = DefaultSaltingService(MYSTEN_LABS_SALTING_SERVICE_URL),
-  @Transient
-  val provingService: ProvingService = DefaultProvingService(MYSTEN_LABS_PROVING_SERVICE_URL)
-)
+@JsName("zkLogin")
+fun zkLogin(zkLoginRequest: ZKLoginRequest) = xyz.mcxross.zero.zkLogin(zkLoginRequest)
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@JsName("continueWithZKLogin")
+fun continueWithZKLogin(
+  saltingService: SaltingService? = DefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL),
+  provingService: ProvingService? = DefaultProvingService(Mysten.MYSTEN_LABS_PROVING_SERVICE_URL),
+  zkLoginNotifier: ZKLoginNotifier
+) = xyz.mcxross.zero.continueWithZKLogin(saltingService, provingService, zkLoginNotifier)

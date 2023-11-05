@@ -13,4 +13,4 @@
  */
 package xyz.mcxross.zero
 
-expect class DefaultZKLoginService : ZKLoginService
+expect open class DefaultZKLoginService : ZKLoginService

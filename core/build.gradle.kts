@@ -30,7 +30,18 @@ kotlin {
 
   jvm { testRuns.named("test") { executionTask.configure { useJUnitPlatform() } } }
 
-  js { browser { commonWebpackConfig { cssSupport { enabled.set(true) } } } }
+  js {
+    moduleName = "@mcxross/zero"
+    browser {
+      webpackTask(Action {
+        output.library = "zero"
+      })
+    }
+    nodejs()
+    compilations.all { kotlinOptions.sourceMap = true }
+    compilations["main"].packageJson {}
+    binaries.executable()
+  }
 
   linuxX64()
   macosArm64()
@@ -52,16 +63,21 @@ kotlin {
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
-    val jvmMain by getting
+    val jvmMain by getting {
+      dependencies {
+        implementation("io.ktor:ktor-client-cio:2.3.5")
+      }
+    }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
         implementation("androidx.appcompat:appcompat:1.6.1")
         implementation("androidx.browser:browser:1.6.0")
         implementation("io.ktor:ktor-client-okhttp:2.3.5")
+        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
       }
     }
-    val jsMain by getting
+    val jsMain by getting { dependencies { implementation("io.ktor:ktor-client-js:2.3.5") } }
     val jsTest by getting
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
@@ -85,14 +101,16 @@ android {
 }
 
 tasks.getByName<DokkaTask>("dokkaHtml") {
-  moduleName.set("OAuth")
+  moduleName.set("ZeroAuth")
   outputDirectory.set(file(buildDir.resolve("dokka")))
   dokkaSourceSets {
     configureEach {
       includes.from("Module.md")
       sourceLink {
         localDirectory.set(file("commonMain/kotlin"))
-        remoteUrl.set(URL("https://github.com/mcxross/0Auth/blob/master/core/src/commonMain/kotlin"))
+        remoteUrl.set(
+          URL("https://github.com/mcxross/0Auth/blob/master/core/src/commonMain/kotlin")
+        )
         remoteLineSuffix.set("#L")
       }
     }
@@ -132,9 +150,7 @@ publishing {
 
     pom {
       name.set("zkLogin SDK")
-      description.set(
-        "A Kotlin Multiplatform SDK for the zkLogin."
-      )
+      description.set("A Kotlin Multiplatform SDK for the zkLogin.")
       url.set("https://github.com/mcxross")
 
       licenses {
@@ -156,12 +172,12 @@ publishing {
 }
 
  /*signing {
-   val sonatypeGpgKey = System.getenv("SONATYPE_GPG_KEY")
-   val sonatypeGpgKeyPassword = System.getenv("SONATYPE_GPG_KEY_PASSWORD")
-   when {
-     sonatypeGpgKey == null || sonatypeGpgKeyPassword == null -> useGpgCmd()
-     else -> useInMemoryPgpKeys(sonatypeGpgKey, sonatypeGpgKeyPassword)
+     val sonatypeGpgKey = System.getenv("SONATYPE_GPG_KEY")
+     val sonatypeGpgKeyPassword = System.getenv("SONATYPE_GPG_KEY_PASSWORD")
+     when {
+       sonatypeGpgKey == null || sonatypeGpgKeyPassword == null -> useGpgCmd()
+       else -> useInMemoryPgpKeys(sonatypeGpgKey, sonatypeGpgKeyPassword)
+     }
+     sign(publishing.publications)
    }
-   sign(publishing.publications)
- }
-*/
+  */

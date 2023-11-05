@@ -14,10 +14,16 @@
 package xyz.mcxross.zero.model
 
 import com.eygraber.uri.Uri
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.util.getQueryParameterAsLong
 
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@JsName("AuthorizationResponse")
 @Serializable
 data class AuthorizationResponse(
 

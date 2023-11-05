@@ -11,20 +11,11 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
-
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlin.js.JsName
-import kotlinx.serialization.Serializable
-
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-@JsName("OpenIDServiceConfiguration")
-@Serializable
-data class OpenIDServiceConfiguration(
-  val provider: Provider,
-  val clientId: String,
-  val redirectUri: String,
-  val nonce: Nonce = Nonce.FromString("to-be-generated"),
+@JsName("ZKLoginError")
+data class ZKLoginError(
+  val message: String,
+  val code: Int,
+  val cause: Throwable? = null,
 )

@@ -11,20 +11,21 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
-
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlin.js.JsName
-import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.model.ZKLoginRequest
+import xyz.mcxross.zero.model.ZKLoginResponse
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-@JsName("OpenIDServiceConfiguration")
-@Serializable
-data class OpenIDServiceConfiguration(
-  val provider: Provider,
-  val clientId: String,
-  val redirectUri: String,
-  val nonce: Nonce = Nonce.FromString("to-be-generated"),
-)
+@JsName("ZKLoginNotifier")
+class ZKLoginNotifier {
+  private var listener: ZKLoginListener? = null
+
+  fun setListener(listener: ZKLoginListener) {
+    this.listener = listener
+  }
+
+  /** The zkLogin complete callback. */
+  fun onZKLoginComplete(request: ZKLoginRequest, response: ZKLoginResponse?, error: ZKLoginError?) {
+    listener?.invoke(request, response, error)
+  }
+}
