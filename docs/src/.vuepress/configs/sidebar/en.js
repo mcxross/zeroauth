@@ -19,6 +19,17 @@ export const sidebarEn = {
                 '/platform/android/quick-start',
             ]
 
+        },
+    ],
+    '/platform/web': [
+        {
+            text: 'Web',
+            children: [
+                '/platform/web/introduction',
+                '/platform/web/conceptual-overview',
+                '/platform/web/quick-start',
+            ]
+
         }
     ],
 };

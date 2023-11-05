@@ -1,8 +1,8 @@
 {
   "name": "zeroauth",
-  "version": "1.0.0",
+  "private": true,
   "description": "Multi-platform zkLogin Suite",
-  "main": "index.js",
+  "type": "module",
   "scripts": {
     "docs:dev": "vuepress dev src",
     "docs:build": "vuepress build src"
@@ -10,7 +10,7 @@
   "keywords": [],
   "author": "McXross",
   "license": "Apache-2.0",
-  "devDependencies": {
+  "dependencies": {
     "@vuepress/client": "2.0.0-beta.67",
     "@vuepress/plugin-docsearch": "2.0.0-beta.67",
     "@vuepress/plugin-google-analytics": "2.0.0-beta.67",

@@ -2,8 +2,8 @@ export const navbarEn = [
     {
         text: "Platforms", children: [
             {text: "Android", link: "/platform/android/introduction"},
-            /*{text: "iOS", link: "/platform/ios"},
-            {text: "Web", link: "/platform/web"},*/]
+            /*{text: "iOS", link: "/platform/ios"},*/
+            {text: "Web", link: "/platform/web/introduction"},]
     },
     {text: "Advanced", children: []},
     {text: "zkLogin", link: "/zklogin"},

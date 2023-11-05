@@ -10,4 +10,8 @@ the general process is as follows:
 
 Please refer to the platform-specific guides for more information.
 
-[Android](/platform/android/introduction)
+## [Android](/platform/android/introduction)
+
+ZeroAuth provides an SDK for Android. For more information, see the [Android](/platform/android/introduction) guide.
+
+## [Web](/platform/web/introduction)
