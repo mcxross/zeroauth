@@ -4,9 +4,9 @@
 
 <h2 align="center">ZeroAuth</h2>
 
-<br>
-
 <p align="center">Multi-platform zkLogin SDK Suite</p>
+
+<br>
 
 ZeroAuth is a multi-platform SDK suite for zkLogin. It is designed to be easy to use, and easy to integrate into your
 existing projects. It offers a consistent native API across different platforms: use zkLogin with Objective-C on
