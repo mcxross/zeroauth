@@ -1,6 +1,14 @@
-<h1 align="center">0Auth (ZeroAuth) - A Multi-platform zkLogin SDK Suite</h1>
+<p align="center">
+    <img src="artwork/logo.png" alt="ZeroAuth logo" width="50" height="50">
+</p>
 
-0Auth is a multi-platform SDK suite for zkLogin. It is designed to be easy to use, and easy to integrate into your
+<h2 align="center">ZeroAuth</h2>
+
+<br>
+
+<p align="center">Multi-platform zkLogin SDK Suite</p>
+
+ZeroAuth is a multi-platform SDK suite for zkLogin. It is designed to be easy to use, and easy to integrate into your
 existing projects. It offers a consistent native API across different platforms: use zkLogin with Objective-C on
 iOS/macOS,
 Kotlin/Java on Android, or C++/C on Windows and Linux.
@@ -12,11 +20,13 @@ maintain stringent usability and security standards, `WebView` on Android, along
 iOS, are explicitly unsupported, as elucidated
 in [Section 8.12 of RFC 8252](https://tools.ietf.org/html/rfc8252#section-8.12).
 
-[![Build Status](https://travis-ci.org/0auth/0auth.svg?branch=master)](https://travis-ci.org/0auth/0auth)
-![vcpkg](https://img.shields.io/badge/vcpkg-0auth-blue.svg)
-[![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.0auth/0auth)](https://search.maven.org/artifact/xyz.mcxross.0auth/0auth)
-[![npm](https://img.shields.io/npm/v/mcxross/0auth)](https://www.npmjs.com/package/@mcxross/0auth)
-![cocoapods](https://img.shields.io/badge/cocoapods-0auth-blue.svg)
+<br>
+
+[![Build Status](https://travis-ci.org/zeroauth/zeroauth.svg?branch=master)](https://travis-ci.org/zeroauth/zeroauth)
+![vcpkg](https://img.shields.io/badge/vcpkg-zeroauth-blue.svg)
+[![Maven Central](https://img.shields.io/maven-central/v/xyz.mcxross.zero/zero)](https://search.maven.org/artifact/xyz.mcxross.zero/zero)
+[![npm](https://img.shields.io/npm/v/mcxross/zero)](https://www.npmjs.com/package/@mcxross/zero)
+![cocoapods](https://img.shields.io/badge/cocoapods-zeroauth-blue.svg)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 
 ![badge-android](http://img.shields.io/badge/Platform-Android-brightgreen.svg?logo=android)
@@ -31,34 +41,6 @@ in [Section 8.12 of RFC 8252](https://tools.ietf.org/html/rfc8252#section-8.12).
 
 - [Introduction](#introduction)
 - [Features](#features)
-- <details>
-    <summary>Getting Started</summary>
-
-  [Link to Section](#getting-started)
-
-    - [Kotlin Multiplatform](#kotlin-multiplatform)
-    - <details>
-        <summary>Native</summary>
-
-      [Link to Section](#native)
-
-        - [Android](#android)
-        - [iOS](#ios)
-        - [Linux](#linux)
-        - [macOS](#macos)
-        - [Windows](#windows)
-      </details>
-    - <details>
-        <summary>FFI</summary>
-
-      [Link to Section](#ffi)
-
-        - [C/C++](#cc)
-        - [Python](#python)
-        - [Ruby](#ruby)
-        - [Rust](#rust)
-      </details>
-  </details>
 - [Usage](#usage)
 - [Contributing](#contributing)
 - [License](#license)
@@ -86,59 +68,17 @@ The zkLogin process is a concise, three-step sequence ensuring user privacy and 
 
 * Multi-platform support
 * Consistent API across platforms
-* Easy to use
-* Easy to integrate into existing projects
-
-# Getting Started
-
-## Kotlin Multiplatform
-
-ZeroAuth is fundamentally a Kotlin multiplatform project. It's packaged as a unified entity but can branch out to
-various platforms leveraging Kotlin's translation and interoperability features. Specifically, Kotlin JS can be
-translated into standard JS, and Kotlin can produce native shared libraries compatible with languages that support
-FFIs (Foreign Functions). This versatility ensures broad applicability across different platforms.
-
-Add the following to your common `build.gradle.kts`:
-
-```kotlin
-implementation("xyz.mcxross.zero:zero:<version>")
-```
-
-ZeroAuth provides artifacts for the following platforms:
-
-* Android
-* iOS
-* Linux
-* macOS
-* Windows
-* JVM
-
-Here is a generic way to include it in your project:
-
-```kotlin
-implementation("xyz.mcxross.zero:zero-<platform>:<version>")
-```
-
-For example, to include the Android artifact:
-
-```kotlin
-implementation("xyz.mcxross.zero:zero-android:<version>")
-```
-
-Android libraries are flavored, the above example will include a release build. To otherwise include a debug build:
-
-```kotlin
-implementation("xyz.mcxross.zero:zero-android-debug:<version>")
-```
+* Modular design
+* Easy to use and Integrates with existing projects
 
 # Usage
 
-For how to use the library, please see the [documentation](https://zeroauth.dev) which provides a detailed guide on
+For how to use the respective SDKs, please see the [documentation](https://zeroauth.dev) which provides a detailed guide on
 how-tos and best practices.
 
 # Contributing
 
-All contributions to 0Auth are welcome. Before opening a PR, please submit an issue detailing the bug or feature. When
+All contributions to ZeroAuth are welcome. Before opening a PR, please submit an issue detailing the bug or feature. When
 opening a PR, please ensure that your contribution builds on the KMM toolchain, has been linted
 with `ktfmt <GOOGLE (INTERNAL)>`, and contains tests when applicable. For more information, please see
 the [contribution guidelines](CONTRIBUTING.md).
