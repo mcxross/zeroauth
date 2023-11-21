@@ -15,7 +15,9 @@ package xyz.mcxross.zero
 
 import ZKLoginError
 import ZKLoginNotifier
+import generateRandomnessJs
 import kotlinx.browser.window
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.mcxross.zero.extension.toAuthorizationRequest
@@ -27,14 +29,13 @@ import xyz.mcxross.zero.model.SaltingService
 import xyz.mcxross.zero.model.ZKLoginRequest
 import xyz.mcxross.zero.oauth.DefaultAuthorizationService
 
-@OptIn(ExperimentalJsExport::class)
+@OptIn(ExperimentalJsExport::class, DelicateCoroutinesApi::class)
 @JsExport
 fun zkLogin(zkLoginRequest: ZKLoginRequest) {
-  val authRequest = zkLoginRequest.toAuthorizationRequest()
-
-  val authorizationService = DefaultAuthorizationService()
-
-  GlobalScope.async { authorizationService.performAuthorizationRequest(this, authRequest) }
+  zkLoginRequest.toAuthorizationRequest {
+    val authorizationService = DefaultAuthorizationService()
+    GlobalScope.async { authorizationService.performAuthorizationRequest(this, it) }
+  }
 }
 
 @OptIn(ExperimentalJsExport::class)
@@ -68,7 +69,11 @@ fun continueWithZKLogin(
     zkLoginNotifier.onZKLoginComplete(
       dummyReq,
       null,
-      ZKLoginError("ID Token is empty. Aborting. You need to restart the login process.", 9000, Throwable("I could not find the ID Token in the URL."))
+      ZKLoginError(
+        "ID Token is empty. Aborting. You need to restart the login process.",
+        9000,
+        Throwable("I could not find the ID Token in the URL.")
+      )
     )
     return
   }

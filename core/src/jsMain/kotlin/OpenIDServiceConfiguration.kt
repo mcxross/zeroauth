@@ -12,7 +12,6 @@
  * limitations under the License.
  */
 import kotlinx.serialization.Serializable
-import xyz.mcxross.zero.model.Nonce
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -23,4 +22,13 @@ data class OpenIDServiceConfiguration(
   val clientId: String,
   val redirectUri: String,
   val nonce: Nonce = Nonce.FromString("nonce-goes-here"),
-)
+) {
+  fun toInternal(): xyz.mcxross.zero.model.OpenIDServiceConfiguration {
+    return xyz.mcxross.zero.model.OpenIDServiceConfiguration(
+      provider.toInternal(),
+      clientId,
+      redirectUri,
+      nonce.toInternal()
+    )
+  }
+}

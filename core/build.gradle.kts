@@ -58,7 +58,9 @@ kotlin {
         implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
         implementation("io.ktor:ktor-client-json:2.3.5")
         implementation("io.ktor:ktor-client-auth:2.3.5")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
         implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
+        implementation("xyz.mcxross.ksui:ksui:1.3.1")
         implementation("com.eygraber:uri-kmp:0.0.15")
       }
     }
@@ -77,7 +79,12 @@ kotlin {
         implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
       }
     }
-    val jsMain by getting { dependencies { implementation("io.ktor:ktor-client-js:2.3.5") } }
+    val jsMain by getting {
+      dependencies {
+        implementation("io.ktor:ktor-client-js:2.3.5")
+        implementation(npm("@mysten/zklogin", "0.3.6"))
+      }
+    }
     val jsTest by getting
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }

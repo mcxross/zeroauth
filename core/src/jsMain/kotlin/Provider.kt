@@ -24,6 +24,60 @@ interface Provider {
   val tokenEndpoint: String
   val revocationEndpoint: String?
   val registrationEndpoint: String?
+
+  fun toInternal(): xyz.mcxross.zero.model.Provider {
+    return when (this) {
+      is Ghost ->
+        xyz.mcxross.zero.model.Ghost(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      is Facebook ->
+        xyz.mcxross.zero.model.Facebook(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      is Google ->
+        xyz.mcxross.zero.model.Google(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      is Apple ->
+        xyz.mcxross.zero.model.Apple(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      is Twitch ->
+        xyz.mcxross.zero.model.Twitch(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      is Slack ->
+        xyz.mcxross.zero.model.Slack(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      else ->
+        xyz.mcxross.zero.model.Ghost(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+    }
+  }
 }
 
 @OptIn(ExperimentalJsExport::class)

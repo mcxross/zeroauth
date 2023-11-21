@@ -17,12 +17,11 @@ import xyz.mcxross.zero.login.DefaultProvingService
 import xyz.mcxross.zero.login.DefaultSaltingService
 import xyz.mcxross.zero.model.ProvingService
 import xyz.mcxross.zero.model.SaltingService
-import xyz.mcxross.zero.model.ZKLoginRequest
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("zkLogin")
-fun zkLogin(zkLoginRequest: ZKLoginRequest) = xyz.mcxross.zero.zkLogin(zkLoginRequest)
+fun zkLogin(zkLoginRequest: ZKLoginRequest) = xyz.mcxross.zero.zkLogin(zkLoginRequest.toInternal())
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport

@@ -29,6 +29,7 @@ import xyz.mcxross.zero.login.DefaultSaltingService
 @Serializable
 data class ZKLoginRequest(
   val openIDServiceConfiguration: OpenIDServiceConfiguration,
+  val endPoint: String = "https://fullnode.devnet.sui.io",
   @Transient
   val saltingService: SaltingService = DefaultSaltingService(MYSTEN_LABS_SALTING_SERVICE_URL),
   @Transient

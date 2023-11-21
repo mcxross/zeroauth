@@ -11,7 +11,6 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
 
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
@@ -20,22 +19,54 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.rpc.epoch
 
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable data class MaximumEpoch(val value: Int)
-
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @Serializable
-data class EphemeralPublicKey(val value: String)
+data class MaximumEpoch(val value: Int) {
+  fun toInternal(): xyz.mcxross.zero.model.MaximumEpoch {
+    return xyz.mcxross.zero.model.MaximumEpoch(value)
+  }
+}
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
+@JsName("EphemeralPublicKey")
 @Serializable
-data class Randomness(val value: String)
+data class EphemeralPublicKey(val value: String) {
+  fun toInternal(): xyz.mcxross.zero.model.EphemeralPublicKey {
+    return xyz.mcxross.zero.model.EphemeralPublicKey(value)
+  }
+}
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
+@JsName("Randomness")
+@Serializable
+data class Randomness(val value: String) {
+  fun toInternal(): xyz.mcxross.zero.model.Randomness {
+    return xyz.mcxross.zero.model.Randomness(value)
+  }
+}
+
+@OptIn(ExperimentalJsExport::class)
+@JsExport
+@JsName("Nonce")
 @Serializable
 sealed class Nonce {
+
+  fun toInternal(): xyz.mcxross.zero.model.Nonce {
+    return when (this) {
+      is FromString -> xyz.mcxross.zero.model.Nonce.FromString(value)
+      is FromComponents ->
+        xyz.mcxross.zero.model.Nonce.FromComponents(
+          maximumEpoch.toInternal(),
+          ephemeralPublicKey.toInternal(),
+          randomness.toInternal()
+        )
+    }
+  }
+
+  @JsName("FromString")
   @Serializable
   data class FromString(val value: String) : Nonce() {
     override fun toString(): String {
@@ -43,6 +74,7 @@ sealed class Nonce {
     }
   }
 
+  @JsName("FromComponents")
   @Serializable
   data class FromComponents(
     val maximumEpoch: MaximumEpoch,

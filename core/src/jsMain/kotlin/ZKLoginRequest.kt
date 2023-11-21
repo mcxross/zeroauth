@@ -24,7 +24,17 @@ import xyz.mcxross.zero.model.SaltingService
 @Serializable
 data class ZKLoginRequest(
   val openIDServiceConfiguration: OpenIDServiceConfiguration,
+  val fullNode: String = "https://fullnode.devnet.sui.io",
   val saltingService: SaltingService =
     DefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL),
   val provingService: ProvingService = DefaultProvingService(Mysten.MYSTEN_LABS_PROVING_SERVICE_URL)
-)
+) {
+  fun toInternal(): xyz.mcxross.zero.model.ZKLoginRequest {
+    return xyz.mcxross.zero.model.ZKLoginRequest(
+      openIDServiceConfiguration.toInternal(),
+      fullNode,
+      saltingService,
+      provingService
+    )
+  }
+}

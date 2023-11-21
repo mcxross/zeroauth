@@ -15,8 +15,11 @@ package xyz.mcxross.zero.extension
 
 import xyz.mcxross.zero.model.AuthorizationRequest
 import xyz.mcxross.zero.model.AuthorizationServiceConfiguration
+import xyz.mcxross.zero.model.Nonce
 import xyz.mcxross.zero.model.Scope
 import xyz.mcxross.zero.model.ZKLoginRequest
+import xyz.mcxross.zero.util.generateNonce
+import xyz.mcxross.zero.util.generateRandomness
 
 fun ZKLoginRequest.toAuthorizationRequest(): AuthorizationRequest {
   val authServiceConfig =
@@ -37,4 +40,46 @@ fun ZKLoginRequest.toAuthorizationRequest(): AuthorizationRequest {
     scope = Scope.OpenID,
     nonce = openIDServiceConfiguration.nonce.toString(),
   )
+}
+
+fun ZKLoginRequest.toAuthorizationRequest(callback: (AuthorizationRequest) -> Unit) {
+  determineNonce(openIDServiceConfiguration.nonce, endPoint) { nonce ->
+    val authServiceConfig =
+      with(openIDServiceConfiguration.provider) {
+        AuthorizationServiceConfiguration(
+          authorizationEndpoint,
+          tokenEndpoint,
+          revocationEndpoint,
+          registrationEndpoint
+        )
+      }
+    callback(
+      AuthorizationRequest(
+        configuration = authServiceConfig,
+        clientId = openIDServiceConfiguration.clientId,
+        responseType = "id_token",
+        redirectUri = openIDServiceConfiguration.redirectUri,
+        scope = Scope.OpenID,
+        nonce = nonce,
+      )
+    )
+  }
+}
+
+private fun determineNonce(nonce: Nonce, url: String, callback: (String) -> Unit) {
+  when (nonce) {
+    is Nonce.FromString -> {
+      callback(nonce.value)
+    }
+    is Nonce.FromComponents ->
+      nonce.generate(url) {
+        callback(
+          generateNonce(
+            nonce.ephemeralPublicKey.value,
+            it.toLong(),
+            nonce.randomness.value.ifEmpty { generateRandomness() }
+          )
+        )
+      }
+  }
 }
