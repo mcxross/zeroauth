@@ -167,12 +167,35 @@
   resolved "https://registry.yarnpkg.com/@leichtgewicht/ip-codec/-/ip-codec-2.0.4.tgz#b2ac626d6cb9c8718ab459166d4bb405b8ffa78b"
   integrity sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==
 
+"@mysten/bcs@0.7.3":
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.7.3.tgz#b2e4558a8feb9fd3a0dc2ff4e94c37e1f8a7c7e5"
+  integrity sha512-fbusBfsyc2MpTACi72H5edWJ670T84va+qn9jSPpb5BzZ+pzUM1Q0ApPrF5OT+mB1o5Ng+mxPQpBCZQkfiV2TA==
+  dependencies:
+    bs58 "^5.0.0"
+
 "@mysten/bcs@0.8.1":
   version "0.8.1"
   resolved "https://registry.yarnpkg.com/@mysten/bcs/-/bcs-0.8.1.tgz#30d3256a728a4a934ae608d118347289fe0ba1e7"
   integrity sha512-wSEdP7QEfGQdb34g+7R0f3OdRqrv88iIABfJVDVJ6IsGLYVILreh8dZfNpZNUUyzctiyhX7zB9e/lR5qkddFPA==
   dependencies:
     bs58 "^5.0.0"
+
+"@mysten/sui.js@0.38.0":
+  version "0.38.0"
+  resolved "https://registry.yarnpkg.com/@mysten/sui.js/-/sui.js-0.38.0.tgz#38878f09fb5c1f868e659e39f4a5c8929d72990c"
+  integrity sha512-aUrq8fxQEQtz/dKH9GkkPQS2p6Spb/q4GqKc60JAX/zt+aZTiux2IYZayMbLYGCkHMTfHsvochVbdu9SUEnzPA==
+  dependencies:
+    "@mysten/bcs" "0.7.3"
+    "@noble/curves" "^1.1.0"
+    "@noble/hashes" "^1.3.1"
+    "@open-rpc/client-js" "^1.8.1"
+    "@scure/bip32" "^1.3.1"
+    "@scure/bip39" "^1.2.1"
+    "@suchipi/femver" "^1.0.0"
+    events "^3.3.0"
+    superstruct "^1.0.3"
+    tweetnacl "^1.0.3"
 
 "@mysten/sui.js@0.46.1":
   version "0.46.1"

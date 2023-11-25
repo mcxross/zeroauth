@@ -12,41 +12,15 @@
  * limitations under the License.
  */
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.Constant.DEFAULT_MAX_EPOCH
 import xyz.mcxross.zero.rpc.epoch
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@Serializable
-data class MaximumEpoch(val value: Int) {
-  fun toInternal(): xyz.mcxross.zero.model.MaximumEpoch {
-    return xyz.mcxross.zero.model.MaximumEpoch(value)
-  }
-}
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@JsName("EphemeralPublicKey")
-@Serializable
-data class EphemeralPublicKey(val value: String) {
-  fun toInternal(): xyz.mcxross.zero.model.EphemeralPublicKey {
-    return xyz.mcxross.zero.model.EphemeralPublicKey(value)
-  }
-}
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@JsName("Randomness")
-@Serializable
-data class Randomness(val value: String) {
-  fun toInternal(): xyz.mcxross.zero.model.Randomness {
-    return xyz.mcxross.zero.model.Randomness(value)
-  }
-}
+import xyz.mcxross.zero.serializer.DynamicSerializer
+import xyz.mcxross.zero.util.generateNonce
+import xyz.mcxross.zero.util.generateRandomness
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -54,36 +28,42 @@ data class Randomness(val value: String) {
 @Serializable
 sealed class Nonce {
 
+  abstract fun generate(endPoint: String, callback: (String) -> Unit)
+
   fun toInternal(): xyz.mcxross.zero.model.Nonce {
     return when (this) {
-      is FromString -> xyz.mcxross.zero.model.Nonce.FromString(value)
-      is FromComponents ->
-        xyz.mcxross.zero.model.Nonce.FromComponents(
-          maximumEpoch.toInternal(),
-          ephemeralPublicKey.toInternal(),
-          randomness.toInternal()
-        )
+      is FromPubKey -> xyz.mcxross.zero.model.Nonce.FromPubKey(pubKey, maximumEpoch, randomness)
+      is FromSecretKey ->
+        xyz.mcxross.zero.model.Nonce.FromSecretKey(maximumEpoch, secretKey, scheme, randomness)
     }
   }
 
-  @JsName("FromString")
+  @JsName("FromPubKey")
   @Serializable
-  data class FromString(val value: String) : Nonce() {
-    override fun toString(): String {
-      return value
-    }
-  }
-
-  @JsName("FromComponents")
-  @Serializable
-  data class FromComponents(
-    val maximumEpoch: MaximumEpoch,
-    val ephemeralPublicKey: EphemeralPublicKey,
-    val randomness: Randomness
+  data class FromPubKey(
+    @Serializable(with = DynamicSerializer::class) val pubKey: Any,
+    val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
+    val randomness: String = generateRandomness()
   ) : Nonce() {
-    fun generate(string: String, callback: (String) -> Unit) {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun generate(endPoint: String, callback: (String) -> Unit) {
       GlobalScope.launch {
-        val epoch = epoch(string)
+        val epoch = epoch(endPoint)
+        callback(generateNonce(pubKey, epoch.toInt() + maximumEpoch, randomness))
+      }
+    }
+  }
+
+  data class FromSecretKey(
+    val maximumEpoch: Int,
+    val secretKey: String,
+    val scheme: String,
+    val randomness: String
+  ) : Nonce() {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun generate(endPoint: String, callback: (String) -> Unit) {
+      GlobalScope.launch {
+        val epoch = epoch(endPoint)
         callback(epoch.toString())
       }
     }

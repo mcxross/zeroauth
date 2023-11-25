@@ -11,12 +11,18 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+@file:JsModule("@mysten/sui.js/keypairs/ed25519")
+@file:JsNonModule
 
-object Constant {
-  const val SALTING_SERVICE_FAIL = 2000
-  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
-  const val PROVING_SERVICE_FAIL = 3000
+external class Ed25519Keypair {
+  companion object {
+    fun fromSecretKey(secretKey: ByteArray): Ed25519Keypair
 
-  const val DEFAULT_MAX_EPOCH = 7
+    fun deriveKeypair(seed: String): Ed25519Keypair
+  }
+
+  fun getSecretKey(): String
+
+  fun getPublicKey(): dynamic
+
 }

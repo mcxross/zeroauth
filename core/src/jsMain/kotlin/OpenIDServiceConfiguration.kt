@@ -11,6 +11,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalJsExport::class)
@@ -21,9 +22,9 @@ data class OpenIDServiceConfiguration(
   val provider: Provider,
   val clientId: String,
   val redirectUri: String,
-  val nonce: Nonce = Nonce.FromString("nonce-goes-here"),
+  val nonce: Nonce = Nonce.FromPubKey(Ed25519Keypair().getPublicKey()),
 ) {
-  fun toInternal(): xyz.mcxross.zero.model.OpenIDServiceConfiguration {
+  internal fun toInternal(): xyz.mcxross.zero.model.OpenIDServiceConfiguration {
     return xyz.mcxross.zero.model.OpenIDServiceConfiguration(
       provider.toInternal(),
       clientId,

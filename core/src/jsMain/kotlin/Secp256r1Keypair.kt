@@ -11,12 +11,12 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+@file:JsModule("@mysten/sui.js/keypairs/secp256r1")
+@file:JsNonModule
+external class Secp256r1Keypair {
+  companion object {
+    fun fromSecretKey(secretKey: ByteArray): Secp256r1Keypair
 
-object Constant {
-  const val SALTING_SERVICE_FAIL = 2000
-  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
-  const val PROVING_SERVICE_FAIL = 3000
-
-  const val DEFAULT_MAX_EPOCH = 7
+    fun deriveKeypair(seed: String): Secp256r1Keypair
+  }
 }

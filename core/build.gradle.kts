@@ -41,6 +41,7 @@ kotlin {
     compilations.all { kotlinOptions.sourceMap = true }
     compilations["main"].packageJson {}
     binaries.executable()
+    generateTypeScriptDefinitions()
   }
 
   linuxX64()
@@ -83,6 +84,7 @@ kotlin {
       dependencies {
         implementation("io.ktor:ktor-client-js:2.3.5")
         implementation(npm("@mysten/zklogin", "0.3.6"))
+        implementation(npm("@mysten/sui.js", "0.38.0"))
       }
     }
     val jsTest by getting

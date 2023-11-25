@@ -11,12 +11,17 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+@file:JsModule("@mysten/zklogin")
+@file:JsNonModule
+@JsName("generateRandomness") external fun generateRandomnessJs(): String
 
-object Constant {
-  const val SALTING_SERVICE_FAIL = 2000
-  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
-  const val PROVING_SERVICE_FAIL = 3000
+@JsName("generateNonce")
+external fun generateNonceJs(pubKey: dynamic, maxEpoch: Int, randomness: String): String
 
-  const val DEFAULT_MAX_EPOCH = 7
-}
+@JsName("generateNonceByScheme")
+external fun generateNonceJs(
+  pubKey: dynamic,
+  scheme: String,
+  maxEpoch: Long,
+  randomness: String
+): String

@@ -13,9 +13,9 @@
  */
 package xyz.mcxross.zero
 
+import Ed25519Keypair
 import ZKLoginError
 import ZKLoginNotifier
-import generateRandomnessJs
 import kotlinx.browser.window
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -24,6 +24,7 @@ import xyz.mcxross.zero.extension.toAuthorizationRequest
 import xyz.mcxross.zero.login.DefaultProvingService
 import xyz.mcxross.zero.login.DefaultSaltingService
 import xyz.mcxross.zero.model.Ghost
+import xyz.mcxross.zero.model.Nonce
 import xyz.mcxross.zero.model.ProvingService
 import xyz.mcxross.zero.model.SaltingService
 import xyz.mcxross.zero.model.ZKLoginRequest
@@ -64,6 +65,7 @@ fun continueWithZKLogin(
             Ghost(),
             "to be determined",
             "to be determined",
+            nonce = Nonce.FromPubKey(Ed25519Keypair().getPublicKey())
           )
       )
     zkLoginNotifier.onZKLoginComplete(

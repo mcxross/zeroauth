@@ -11,12 +11,24 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+import xyz.mcxross.zero.crypto.SignatureScheme
+import xyz.mcxross.zero.crypto.fromString
 
-object Constant {
-  const val SALTING_SERVICE_FAIL = 2000
-  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
-  const val PROVING_SERVICE_FAIL = 3000
+object Crypto {
 
-  const val DEFAULT_MAX_EPOCH = 7
+  fun newKeyPair(scheme: SignatureScheme): dynamic {
+    return when (scheme) {
+      SignatureScheme.Ed25519 -> Ed25519Keypair()
+      SignatureScheme.SECP256K1 -> Secp256k1Keypair()
+      SignatureScheme.SECP256R1 -> Secp256r1Keypair()
+    }
+  }
+
+  fun newKeyPair(scheme: String): dynamic {
+    return when (fromString(scheme)) {
+      SignatureScheme.Ed25519 -> Ed25519Keypair()
+      SignatureScheme.SECP256K1 -> Secp256k1Keypair()
+      SignatureScheme.SECP256R1 -> Secp256r1Keypair()
+    }
+  }
 }

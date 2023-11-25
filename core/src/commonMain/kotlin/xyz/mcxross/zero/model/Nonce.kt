@@ -13,45 +13,54 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import xyz.mcxross.zero.Constant.DEFAULT_MAX_EPOCH
 import xyz.mcxross.zero.rpc.epoch
-
-@OptIn(ExperimentalJsExport::class) @JsExport @Serializable data class MaximumEpoch(val value: Int)
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@Serializable
-data class EphemeralPublicKey(val value: String)
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@Serializable
-data class Randomness(val value: String)
+import xyz.mcxross.zero.serializer.DynamicSerializer
+import xyz.mcxross.zero.util.generateNonce
+import xyz.mcxross.zero.util.generateRandomness
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsExport
+import kotlin.js.JsName
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @Serializable
 sealed class Nonce {
+
+  abstract fun generate(endPoint: String, callback: (String) -> Unit)
+
+  @JsName("FromPubKey")
   @Serializable
-  data class FromString(val value: String) : Nonce() {
-    override fun toString(): String {
-      return value
+  data class FromPubKey(
+    @Serializable(with = DynamicSerializer::class) val pubKey: Any,
+    val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
+    val randomness: String = generateRandomness()
+  ) : Nonce() {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun generate(endPoint: String, callback: (String) -> Unit) {
+      GlobalScope.launch {
+        val epoch = epoch(endPoint)
+        callback(generateNonce(pubKey, epoch.toInt() + maximumEpoch, randomness))
+      }
     }
   }
 
+  @JsName("FromSecretKey")
   @Serializable
-  data class FromComponents(
-    val maximumEpoch: MaximumEpoch,
-    val ephemeralPublicKey: EphemeralPublicKey,
-    val randomness: Randomness
+  data class FromSecretKey(
+    val maximumEpoch: Int,
+    val secretKey: String,
+    val scheme: String,
+    val randomness: String
   ) : Nonce() {
-    fun generate(string: String, callback: (String) -> Unit) {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun generate(endPoint: String, callback: (String) -> Unit) {
       GlobalScope.launch {
-        val epoch = epoch(string)
+        val epoch = epoch(endPoint)
         callback(epoch.toString())
       }
     }

@@ -18,8 +18,6 @@ import xyz.mcxross.zero.model.AuthorizationServiceConfiguration
 import xyz.mcxross.zero.model.Nonce
 import xyz.mcxross.zero.model.Scope
 import xyz.mcxross.zero.model.ZKLoginRequest
-import xyz.mcxross.zero.util.generateNonce
-import xyz.mcxross.zero.util.generateRandomness
 
 fun ZKLoginRequest.toAuthorizationRequest(): AuthorizationRequest {
   val authServiceConfig =
@@ -66,20 +64,5 @@ fun ZKLoginRequest.toAuthorizationRequest(callback: (AuthorizationRequest) -> Un
   }
 }
 
-private fun determineNonce(nonce: Nonce, url: String, callback: (String) -> Unit) {
-  when (nonce) {
-    is Nonce.FromString -> {
-      callback(nonce.value)
-    }
-    is Nonce.FromComponents ->
-      nonce.generate(url) {
-        callback(
-          generateNonce(
-            nonce.ephemeralPublicKey.value,
-            it.toLong(),
-            nonce.randomness.value.ifEmpty { generateRandomness() }
-          )
-        )
-      }
-  }
-}
+private fun determineNonce(nonce: Nonce, url: String, callback: (String) -> Unit) =
+  nonce.generate(url, callback)

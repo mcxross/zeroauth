@@ -11,12 +11,19 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+package xyz.mcxross.zero.crypto
 
-object Constant {
-  const val SALTING_SERVICE_FAIL = 2000
-  const val SALTING_FAIL_SERVICE_NOT_DEFINED = 2001
-  const val PROVING_SERVICE_FAIL = 3000
+enum class SignatureScheme {
+  Ed25519,
+  SECP256K1,
+  SECP256R1
+}
 
-  const val DEFAULT_MAX_EPOCH = 7
+fun fromString(s: String): SignatureScheme {
+  return when (s.lowercase()) {
+    "ed25519" -> SignatureScheme.Ed25519
+    "secp256k1" -> SignatureScheme.SECP256K1
+    "secp256r1" -> SignatureScheme.SECP256R1
+    else -> throw Exception("Unknown signature scheme: $s")
+  }
 }
