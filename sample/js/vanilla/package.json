@@ -1,0 +1,13 @@
+{
+  "name": "vanilla",
+  "version": "1.0.0",
+  "description": "ZeroAuth Vanilla Web Sample",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "serve": "npx http-server src -p 9000 -o",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "McXross",
+  "license": "Apache-2.0"
+}
