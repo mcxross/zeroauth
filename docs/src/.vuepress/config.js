@@ -31,10 +31,7 @@ export default defineUserConfig({
         docsearchPlugin({
             appId: 'JH481W5ZQ4',
             apiKey: '8e1a51997283b7eb0ef6f647ea0e7158',
-            indexName: 'zeroauth',
-            searchParameters: {
-                facetFilters: ['tags:v2'],
-            }
+            indexName: 'zeroauth'
         }),
     ]
 })
