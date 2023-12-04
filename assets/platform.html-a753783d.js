@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-25ae624c","path":"/guide/platform.html","title":"Supported Platforms","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1697977806000,"contributors":[{"name":"@a","email":"28899947+astinz@users.noreply.github.com","commits":2}]},"filePathRelative":"guide/platform.md"}');export{t as data};

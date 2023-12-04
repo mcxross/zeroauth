@@ -1,0 +1,1 @@
+import{_ as e,o,c as s,a as t}from"./app-ebf7013b.js";const c={},n=t("p",null,"Coming soon!",-1),_=[n];function a(r,l){return o(),s("div",null,_)}const d=e(c,[["render",a],["__file","ios.html.vue"]]);export{d as default};

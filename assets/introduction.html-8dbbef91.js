@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-62d2a908","path":"/platform/android/introduction.html","title":"Introduction","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1698821433000,"contributors":[{"name":"@a","email":"28899947+astinz@users.noreply.github.com","commits":1}]},"filePathRelative":"platform/android/introduction.md"}');export{t as data};
