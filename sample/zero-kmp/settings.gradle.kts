@@ -1,18 +1,18 @@
 pluginManagement {
-    repositories {
-        google()
-        gradlePluginPortal()
-        mavenCentral()
-    }
+  repositories {
+    google()
+    gradlePluginPortal()
+    mavenCentral()
+  }
 }
 
 dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
+  repositories {
+    google()
+    mavenCentral()
+    mavenLocal()
+  }
 }
 
 rootProject.name = "zero-kmp"
-include(":androidApp")
-include(":shared")
+include(":androidApp", ":shared")

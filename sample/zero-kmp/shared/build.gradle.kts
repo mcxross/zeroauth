@@ -7,7 +7,7 @@ plugins {
 kotlin {
     targetHierarchy.default()
 
-    android {
+    androidTarget {
         compilations.all {
             kotlinOptions {
                 jvmTarget = "1.8"
@@ -40,7 +40,7 @@ kotlin {
 }
 
 android {
-    namespace = "xyz.mcxross.ksui.zero_kmp"
+    namespace = "xyz.mcxross.zero.zero_kmp"
     compileSdk = 33
     defaultConfig {
         minSdk = 24
