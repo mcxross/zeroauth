@@ -1,3 +1,4 @@
+@file:JvmName("ExtensionAndroid")
 /*
  * Copyright 2016 McXross. All Rights Reserved.
  *

@@ -60,7 +60,7 @@ fun zkLogin(context: Context, configAction: ZKLoginRequestConfig.() -> Unit): In
   return zkLogin(context, request)
 }
 
-actual class DefaultZKLoginService(private val context: Context) : ZKLoginService {
+actual open class DefaultZKLoginService(private val context: Context) : ZKLoginService {
   override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent = zkLogin(context, zkLoginRequest)
 
   fun zkLogin(configAction: ZKLoginRequestConfig.() -> Unit): Intent {
@@ -87,7 +87,7 @@ class ZKLoginRequestConfig {
   var provider: Provider = Ghost()
   var clientId: String = ""
   var redirectUri: String = ""
-  var nonce: Nonce = Nonce.FromString("")
+  var nonce: Nonce = Nonce.FromPubKey("")
   var saltingService: SaltingService =
     AndroidDefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL)
   var provingService: ProvingService = DefaultProvingService(Mysten.MYSTEN_LABS_PROVING_SERVICE_URL)
