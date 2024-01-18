@@ -34,8 +34,7 @@ involves appending a random data string to the user's identity (specifically, th
 obscuring any direct connection between the user's Web2 and Web3 credentials. This process significantly enhances
 privacy by preventing cross-referencing of user credentials.
 
-The application can implement salting through several methods, generally categorized into two main approaches: *
-*client-side** and **server-side**.
+The application can implement salting through several methods, generally categorized into two main approaches: **client-side** and **server-side**.
 
 1. **Client-Side Salting**: In this scenario, the responsibility of generating and maintaining the salt rests either
    with the application itself or the user. The application can directly manage salt creation and storage.
@@ -77,7 +76,7 @@ comprehensive instructions, enabling developers to integrate the service smoothl
 Alternatively, Mystenlabs offers a proprietary ZK Proving Service. However, access is currently restricted and available
 only on a whitelist basis. Developers seeking to explore this option or wishing to request access can reach out directly
 to
-Mystenlabs for more information.
+[Mystenlabs](https://mystenlabs.com/news) for more information.
 
 Regardless of the chosen setup, the Proving Service client library within the ZeroAuth SDKs simplifies interaction with
 the ZK Proving Service through a straightforward API, making it easier for developers to integrate these capabilities
