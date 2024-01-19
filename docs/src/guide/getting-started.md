@@ -15,3 +15,5 @@ Please refer to the platform-specific guides for more information.
 ZeroAuth provides an SDK for Android. For more information, see the [Android](/platform/android/introduction) guide.
 
 ## [Web](/platform/web/introduction)
+
+ZeroAuth provides an SDK for Web. For more information, see the [Web](/platform/web/introduction) guide.
