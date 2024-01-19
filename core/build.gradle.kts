@@ -1,7 +1,9 @@
 import java.net.URL
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.kotlin.dsl.signing
 import org.gradle.api.tasks.bundling.Jar
 import org.jetbrains.dokka.gradle.DokkaTask
+import java.util.*
 
 plugins {
   kotlin("multiplatform")
@@ -22,6 +24,16 @@ repositories {
   maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
 }
 
+ext["signing.keyId"] = null
+
+ext["signing.password"] = null
+
+ext["signing.secretKeyRingFile"] = null
+
+ext["sonatypeUser"] = null
+
+ext["sonatypePass"] = null
+
 kotlin {
   androidTarget { publishLibraryVariants("release", "debug") }
 
@@ -33,9 +45,11 @@ kotlin {
   js {
     moduleName = "@mcxross/zero"
     browser {
-      webpackTask(Action {
-        output.library = "zero"
-      })
+      webpackTask(Action { output.library = "zero" })
+      @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalDistributionDsl::class)
+      distribution(
+        Action { outputDirectory.set(File(rootProject.buildDir, "js/packages/@mcxross/zero/dist")) }
+      )
     }
     nodejs()
     compilations.all { kotlinOptions.sourceMap = true }
@@ -66,11 +80,7 @@ kotlin {
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
-    val jvmMain by getting {
-      dependencies {
-        implementation("io.ktor:ktor-client-cio:2.3.5")
-      }
-    }
+    val jvmMain by getting { dependencies { implementation("io.ktor:ktor-client-cio:2.3.5") } }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
@@ -118,7 +128,7 @@ tasks.getByName<DokkaTask>("dokkaHtml") {
       sourceLink {
         localDirectory.set(file("commonMain/kotlin"))
         remoteUrl.set(
-          URL("https://github.com/mcxross/0Auth/blob/master/core/src/commonMain/kotlin")
+          URL("https://github.com/mcxross/zeroauth/blob/master/core/src/commonMain/kotlin")
         )
         remoteLineSuffix.set("#L")
       }
@@ -133,8 +143,24 @@ val javadocJar =
     from(buildDir.resolve("dokka"))
   }
 
+val secretPropsFile = project.rootProject.file("local.properties")
+
+if (secretPropsFile.exists()) {
+  secretPropsFile
+    .reader()
+    .use { Properties().apply { load(it) } }
+    .onEach { (name, value) -> ext[name.toString()] = value }
+} else {
+  ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
+  ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
+  ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_IN_MEMORY_SECRET_KEY")
+  ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
+  ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+}
+
+fun getExtraString(name: String) = ext[name]?.toString()
+
 publishing {
-  if (hasProperty("sonatypeUser") && hasProperty("sonatypePass")) {
     repositories {
       maven {
         name = "sonatype"
@@ -147,18 +173,17 @@ publishing {
           },
         )
         credentials {
-          username = property("sonatypeUser") as String
-          password = property("sonatypePass") as String
+          username = getExtraString("sonatypeUser")
+          password = getExtraString("sonatypePass")
         }
       }
     }
-  }
 
   publications.withType<MavenPublication> {
     // artifact(javadocJar.get())
 
     pom {
-      name.set("zkLogin SDK")
+      name.set("ZeroAuth")
       description.set("A Kotlin Multiplatform SDK for the zkLogin.")
       url.set("https://github.com/mcxross")
 
@@ -175,18 +200,11 @@ publishing {
           email.set("oss@mcxross.xyz")
         }
       }
-      scm { url.set("https://github.com/mcxross/0Auth") }
+      scm { url.set("https://github.com/mcxross/zeroauth") }
     }
   }
 }
 
- /*signing {
-     val sonatypeGpgKey = System.getenv("SONATYPE_GPG_KEY")
-     val sonatypeGpgKeyPassword = System.getenv("SONATYPE_GPG_KEY_PASSWORD")
-     when {
-       sonatypeGpgKey == null || sonatypeGpgKeyPassword == null -> useGpgCmd()
-       else -> useInMemoryPgpKeys(sonatypeGpgKey, sonatypeGpgKeyPassword)
-     }
-     sign(publishing.publications)
-   }
-  */
+signing {
+  sign(publishing.publications)
+}

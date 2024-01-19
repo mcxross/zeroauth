@@ -14,5 +14,6 @@
 package xyz.mcxross.zero.client
 
 import io.ktor.client.engine.*
+import io.ktor.client.engine.cio.*
 
-actual val defaultEngine: HttpClientEngine = TODO()
+actual val defaultEngine: HttpClientEngine = CIO.create()
