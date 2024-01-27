@@ -1,9 +1,9 @@
 import java.net.URL
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.signing
-import org.gradle.api.tasks.bundling.Jar
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.util.*
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.tasks.bundling.Jar
+import org.gradle.kotlin.dsl.signing
+import org.jetbrains.dokka.gradle.DokkaTask
 
 plugins {
   kotlin("multiplatform")
@@ -48,8 +48,9 @@ kotlin {
       webpackTask(Action { output.library = "zero" })
       @OptIn(org.jetbrains.kotlin.gradle.targets.js.dsl.ExperimentalDistributionDsl::class)
       distribution(
-        Action { outputDirectory.set(File(rootProject.buildDir, "js/packages/@mcxross/zero/dist")) }
-      )
+          Action {
+            outputDirectory.set(File(rootProject.buildDir, "js/packages/@mcxross/zero/dist"))
+          })
     }
     nodejs()
     compilations.all { kotlinOptions.sourceMap = true }
@@ -68,31 +69,31 @@ kotlin {
   sourceSets {
     val commonMain by getting {
       dependencies {
-        implementation("io.ktor:ktor-client-core:2.3.5")
-        implementation("io.ktor:ktor-client-serialization:2.3.5")
-        implementation("io.ktor:ktor-client-content-negotiation:2.3.5")
-        implementation("io.ktor:ktor-client-json:2.3.5")
-        implementation("io.ktor:ktor-client-auth:2.3.5")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-        implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.5")
-        implementation("xyz.mcxross.ksui:ksui:1.3.1")
-        implementation("com.eygraber:uri-kmp:0.0.15")
+        implementation(libs.ktor.client.core)
+        implementation(libs.ktor.client.serialization)
+        implementation(libs.ktor.client.content.negotiation)
+        implementation(libs.ktor.client.json)
+        implementation(libs.ktor.client.auth)
+        implementation(libs.kotlinx.coroutines.core)
+        implementation(libs.ktor.serialization.kotlinx.json)
+        implementation(libs.ksui)
+        implementation(libs.uri.kmp)
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
-    val jvmMain by getting { dependencies { implementation("io.ktor:ktor-client-cio:2.3.5") } }
+    val jvmMain by getting { dependencies { implementation(libs.ktor.client.cio) } }
     val jvmTest by getting
     val androidMain by getting {
       dependencies {
-        implementation("androidx.appcompat:appcompat:1.6.1")
-        implementation("androidx.browser:browser:1.6.0")
-        implementation("io.ktor:ktor-client-okhttp:2.3.5")
-        implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+        implementation(libs.appcompat)
+        implementation(libs.browser)
+        implementation(libs.ktor.client.okhttp)
+        implementation(libs.lifecycle.runtime.ktx)
       }
     }
     val jsMain by getting {
       dependencies {
-        implementation("io.ktor:ktor-client-js:2.3.5")
+        implementation(libs.ktor.client.js)
         implementation(npm("@mysten/zklogin", "0.3.6"))
         implementation(npm("@mysten/sui.js", "0.38.0"))
       }
@@ -128,8 +129,7 @@ tasks.getByName<DokkaTask>("dokkaHtml") {
       sourceLink {
         localDirectory.set(file("commonMain/kotlin"))
         remoteUrl.set(
-          URL("https://github.com/mcxross/zeroauth/blob/master/core/src/commonMain/kotlin")
-        )
+            URL("https://github.com/mcxross/zeroauth/blob/master/core/src/commonMain/kotlin"))
         remoteLineSuffix.set("#L")
       }
     }
@@ -137,19 +137,19 @@ tasks.getByName<DokkaTask>("dokkaHtml") {
 }
 
 val javadocJar =
-  tasks.register<Jar>("javadocJar") {
-    archiveClassifier.set("javadoc")
-    dependsOn("dokkaHtml")
-    from(buildDir.resolve("dokka"))
-  }
+    tasks.register<Jar>("javadocJar") {
+      archiveClassifier.set("javadoc")
+      dependsOn("dokkaHtml")
+      from(buildDir.resolve("dokka"))
+    }
 
 val secretPropsFile = project.rootProject.file("local.properties")
 
 if (secretPropsFile.exists()) {
   secretPropsFile
-    .reader()
-    .use { Properties().apply { load(it) } }
-    .onEach { (name, value) -> ext[name.toString()] = value }
+      .reader()
+      .use { Properties().apply { load(it) } }
+      .onEach { (name, value) -> ext[name.toString()] = value }
 } else {
   ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
   ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
@@ -161,23 +161,23 @@ if (secretPropsFile.exists()) {
 fun getExtraString(name: String) = ext[name]?.toString()
 
 publishing {
-    repositories {
-      maven {
-        name = "sonatype"
-        val isSnapshot = version.toString().endsWith("-SNAPSHOT")
-        setUrl(
+  repositories {
+    maven {
+      name = "sonatype"
+      val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+      setUrl(
           if (isSnapshot) {
             "https://s01.oss.sonatype.org/content/repositories/snapshots/"
           } else {
             "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
           },
-        )
-        credentials {
-          username = getExtraString("sonatypeUser")
-          password = getExtraString("sonatypePass")
-        }
+      )
+      credentials {
+        username = getExtraString("sonatypeUser")
+        password = getExtraString("sonatypePass")
       }
     }
+  }
 
   publications.withType<MavenPublication> {
     // artifact(javadocJar.get())
@@ -206,5 +206,5 @@ publishing {
 }
 
 signing {
-  sign(publishing.publications)
+  // sign(publishing.publications)
 }
