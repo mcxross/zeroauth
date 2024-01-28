@@ -32,4 +32,15 @@ export const sidebarEn = {
 
         }
     ],
+    '/platform/desktop': [
+        {
+            text: 'Desktop',
+            children: [
+                '/platform/desktop/introduction',
+                '/platform/desktop/conceptual-overview',
+                '/platform/desktop/quick-start',
+            ]
+
+        }
+    ],
 };

@@ -17,3 +17,7 @@ ZeroAuth provides an SDK for Android. For more information, see the [Android](/p
 ## [Web](/platform/web/introduction)
 
 ZeroAuth provides an SDK for Web. For more information, see the [Web](/platform/web/introduction) guide.
+
+## [Desktop](/platform/desktop/introduction)
+
+To integrate zkLogin into your desktop application, refer to the [Desktop](/platform/desktop/introduction) guide.

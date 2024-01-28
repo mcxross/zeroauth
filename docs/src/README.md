@@ -17,5 +17,5 @@ features:
     details: Prioritizing security, ZeroAuth strictly adheres to RFC 8252 standards for native apps, utilizing platform-specific authorization techniques and shunning WebView methods to safeguard user data and fortify against security threats.
   - title: Seamless Integration
     details: ZeroAuth is designed to be easy to use and integrate, with a simple, intuitive API that allows developers to quickly and easily add zkLogin to their applications.
-footer: Apache-2.0 Licensed | Copyright © 2023 McXross
+footer: Apache-2.0 Licensed | Copyright © 2024 McXross
 ---
