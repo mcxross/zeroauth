@@ -66,6 +66,8 @@ kotlin {
   tvosArm64()
   watchosArm64()
 
+  applyDefaultHierarchyTemplate()
+
   sourceSets {
     val commonMain by getting {
       dependencies {
@@ -81,8 +83,16 @@ kotlin {
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
-    val jvmMain by getting { dependencies { implementation(libs.ktor.client.cio) } }
+    val jvmMain by getting {
+      dependencies {
+        implementation(libs.ktor.client.cio)
+        implementation(libs.ktor.server.core)
+        implementation(libs.ktor.server.netty)
+        implementation("ch.qos.logback:logback-classic:1.2.3")
+      }
+    }
     val jvmTest by getting
+
     val androidMain by getting {
       dependencies {
         implementation(libs.appcompat)
