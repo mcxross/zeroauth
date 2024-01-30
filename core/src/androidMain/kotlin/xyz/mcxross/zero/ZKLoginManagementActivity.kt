@@ -56,20 +56,20 @@ class ZKLoginManagementActivity : AppCompatActivity() {
   private var data: Intent? = null
 
   private val resultLauncher: ActivityResultLauncher<Intent> =
-    registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-      when (result.resultCode) {
-        Activity.RESULT_OK -> {
-          Logger.debug(TAG, "onActivityResult OK: ${result.data}")
-          data = result.data
-          handleZKLogin(data)
-        }
-        else -> {
-          Logger.debug(TAG, "onActivityResult CANCELLED")
-          sendResult(Activity.RESULT_CANCELED, null)
-          finish()
+      registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        when (result.resultCode) {
+          Activity.RESULT_OK -> {
+            Logger.debug(TAG, "onActivityResult OK: ${result.data}")
+            data = result.data
+            handleZKLogin(data)
+          }
+          else -> {
+            Logger.debug(TAG, "onActivityResult CANCELLED")
+            sendResult(Activity.RESULT_CANCELED, null)
+            finish()
+          }
         }
       }
-    }
 
   @Override
   public override fun onCreate(savedInstanceBundle: Bundle?) {
@@ -82,7 +82,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     // If this is the first run of the activity, start the authorization management intent.
     // Note that we do not finish the activity at this point, in order to remain on the back
     // stack underneath the authorization activity.
-    if (authorizationManagementStarted) {
+    if (!authorizationManagementStarted) {
       startAuthorizationManagementIntent()
     }
   }
@@ -91,7 +91,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     authService = DefaultAuthorizationService(this)
     (request as? AuthorizationRequest)?.let {
       val authIntent =
-        (authService as DefaultAuthorizationService).getAuthorizationRequestIntent(it)
+          (authService as DefaultAuthorizationService).getAuthorizationRequestIntent(it)
       resultLauncher.launch(authIntent)
     }
     authorizationManagementStarted = true
@@ -114,30 +114,28 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     bundle?.let {
       it.getString(KEY_AUTH_REQUEST, null)?.let { authRequestJson ->
         request =
-          AuthorizationManagementUtil.requestFrom(
-            authRequestJson,
-            AuthorizationManagementUtil.REQUEST_TYPE_AUTHORIZATION
-          )
+            AuthorizationManagementUtil.requestFrom(
+                authRequestJson, AuthorizationManagementUtil.REQUEST_TYPE_AUTHORIZATION)
       }
+          ?: run {
+            Logger.warn("Authorization request missing - unable to handle response")
+            finish()
+          }
+    }
         ?: run {
-          Logger.warn("Authorization request missing - unable to handle response")
+          Logger.warn("No stored state - unable to handle response")
           finish()
         }
-    }
-      ?: run {
-        Logger.warn("No stored state - unable to handle response")
-        finish()
-      }
   }
 
   private fun handleZKLogin(data: Intent?) {
     data
-      ?: run {
-        Logger.warn(TAG, "data is null, terminating")
-        sendResult(RESULT_CANCELED, null)
-        finish()
-        return
-      }
+        ?: run {
+          Logger.warn(TAG, "data is null, terminating")
+          sendResult(RESULT_CANCELED, null)
+          finish()
+          return
+        }
     val salt = handleSalting()
     val proof = handleProving(salt)
     finishZKLogin(salt, proof)
@@ -159,7 +157,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
       is AndroidDefaultSaltingService -> {
         Logger.debug(TAG, "SaltingService is AndroidDefaultSaltingService, performing salting")
         val androidDefaultSaltingService =
-          ServiceHolder.saltingService as AndroidDefaultSaltingService
+            ServiceHolder.saltingService as AndroidDefaultSaltingService
         // We need this to launch coroutines
         androidDefaultSaltingService.lifecycleOwner = this
 
@@ -206,13 +204,12 @@ class ZKLoginManagementActivity : AppCompatActivity() {
       is AndroidDefaultProvingService -> {
         Logger.debug(TAG, "ProvingService is AndroidDefaultProvingService, performing proving")
         val androidDefaultProvingService =
-          ServiceHolder.provingService as AndroidDefaultProvingService
+            ServiceHolder.provingService as AndroidDefaultProvingService
         // We need this to launch coroutines
         androidDefaultProvingService.lifecycleOwner = this
         provingResponseWrapper =
-          provingService.prove(
-            DefaultProofRequest("", "", 2, "", (salt as DefaultSaltResponse).salt, "")
-          )
+            provingService.prove(
+                DefaultProofRequest("", "", 2, "", (salt as DefaultSaltResponse).salt, ""))
       }
       else -> {
         // Just call the salt method
@@ -243,16 +240,13 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     }
 
     val zkLoginResponse =
-      ZKLoginResponse(
-        request = currentRequest,
-        saltResponse = saltResponseWrapper,
-        proofResponse = proof
-      )
+        ZKLoginResponse(
+            request = currentRequest, saltResponse = saltResponseWrapper, proofResponse = proof)
 
     val intent: Intent =
-      Intent().apply {
-        putExtra("zkLoginResponse", Json.encodeToString(serializer(), zkLoginResponse))
-      }
+        Intent().apply {
+          putExtra("zkLoginResponse", Json.encodeToString(serializer(), zkLoginResponse))
+        }
     sendResult(Activity.RESULT_OK, intent)
     finish()
   }
@@ -271,17 +265,15 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     private const val KEY_ZK_LOGIN_REQUEST = "zkLoginRequest"
 
     fun createStartIntent(
-      context: Context,
-      request: ZKLoginRequest,
+        context: Context,
+        request: ZKLoginRequest,
     ): Intent {
       val authorizationRequest = request.toAuthorizationRequest()
 
       return Intent(context, ZKLoginManagementActivity::class.java).apply {
         putExtra(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), authorizationRequest))
         Logger.debug(
-          "createStartIntent",
-          "$KEY_AUTH_REQUEST: ${Json.encodeToString(serializer(), request)}"
-        )
+            "createStartIntent", "$KEY_AUTH_REQUEST: ${Json.encodeToString(serializer(), request)}")
       }
     }
   }

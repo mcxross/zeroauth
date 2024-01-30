@@ -21,11 +21,12 @@ import kotlinx.serialization.Serializable
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("Provider")
-interface Provider {
-  val authorizationEndpoint: String
-  val tokenEndpoint: String
-  val revocationEndpoint: String?
-  val registrationEndpoint: String?
+@Serializable
+sealed class Provider {
+  abstract val authorizationEndpoint: String
+  abstract val tokenEndpoint: String
+  abstract val revocationEndpoint: String?
+  abstract val registrationEndpoint: String?
 }
 
 @OptIn(ExperimentalJsExport::class)
@@ -37,7 +38,7 @@ data class Ghost(
   override val tokenEndpoint: String = "",
   override val revocationEndpoint: String? = null,
   override val registrationEndpoint: String? = null,
-) : Provider
+) : Provider()
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -48,7 +49,7 @@ data class Facebook(
   override val tokenEndpoint: String = "https://graph.facebook.com/v2.8/oauth/access_token",
   override val revocationEndpoint: String? = null,
   override val registrationEndpoint: String? = null,
-) : Provider
+) : Provider()
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -59,7 +60,7 @@ data class Google(
   override val tokenEndpoint: String = "https://www.googleapis.com/oauth2/v4/token",
   override val revocationEndpoint: String? = "https://accounts.google.com/o/oauth2/revoke",
   override val registrationEndpoint: String? = "https://accounts.google.com/o/oauth2/device/code",
-) : Provider
+) : Provider()
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -70,7 +71,7 @@ data class Apple(
   override val tokenEndpoint: String = "https://appleid.apple.com/auth/token",
   override val revocationEndpoint: String? = null,
   override val registrationEndpoint: String? = null,
-) : Provider
+) : Provider()
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -81,7 +82,7 @@ data class Twitch(
   override val tokenEndpoint: String = "https://id.twitch.tv/oauth2/token",
   override val revocationEndpoint: String? = null,
   override val registrationEndpoint: String? = null,
-) : Provider
+) : Provider()
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
@@ -92,4 +93,4 @@ data class Slack(
   override val tokenEndpoint: String = "https://slack.com/api/oauth.access",
   override val revocationEndpoint: String? = null,
   override val registrationEndpoint: String? = null,
-) : Provider
+) : Provider()
