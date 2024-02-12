@@ -13,6 +13,8 @@
  */
 package xyz.mcxross.zero.model
 
+import kotlin.js.ExperimentalJsExport
+import kotlin.js.JsName
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -20,42 +22,46 @@ import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.Constant.DEFAULT_MAX_EPOCH
 import xyz.mcxross.zero.rpc.epoch
 import xyz.mcxross.zero.serializer.DynamicSerializer
+import xyz.mcxross.zero.util.generateKey
 import xyz.mcxross.zero.util.generateNonce
 import xyz.mcxross.zero.util.generateRandomness
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-import kotlin.js.JsName
 
 @OptIn(ExperimentalJsExport::class)
-@JsExport
 @Serializable
 sealed class Nonce {
 
   abstract fun generate(endPoint: String, callback: (String) -> Unit)
 
+  abstract suspend fun generateAsync(endPoint: String): String
+
   @JsName("FromPubKey")
   @Serializable
   data class FromPubKey(
-    @Serializable(with = DynamicSerializer::class) val pubKey: Any,
-    val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
-    val randomness: String = generateRandomness()
+      @Serializable(with = DynamicSerializer::class) val pk: Any = generateKey(),
+      val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
+      val randomness: String = generateRandomness()
   ) : Nonce() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun generate(endPoint: String, callback: (String) -> Unit) {
       GlobalScope.launch {
         val epoch = epoch(endPoint)
-        callback(generateNonce(pubKey, epoch.toInt() + maximumEpoch, randomness))
+        callback(generateNonce(pk, epoch.toInt() + maximumEpoch, randomness))
       }
+    }
+
+    override suspend fun generateAsync(endPoint: String): String {
+      val epoch = epoch(endPoint)
+      return generateNonce(pk, epoch.toInt() + maximumEpoch, randomness)
     }
   }
 
   @JsName("FromSecretKey")
   @Serializable
   data class FromSecretKey(
-    val maximumEpoch: Int,
-    val secretKey: String,
-    val scheme: String,
-    val randomness: String
+      val maximumEpoch: Int,
+      val secretKey: String,
+      val scheme: String,
+      val randomness: String
   ) : Nonce() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun generate(endPoint: String, callback: (String) -> Unit) {
@@ -63,6 +69,10 @@ sealed class Nonce {
         val epoch = epoch(endPoint)
         callback(epoch.toString())
       }
+    }
+
+    override suspend fun generateAsync(endPoint: String): String {
+      TODO("Not yet implemented")
     }
   }
 }

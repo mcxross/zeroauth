@@ -27,58 +27,56 @@ import xyz.mcxross.zero.model.SaltingService
 import xyz.mcxross.zero.model.ServiceHolder
 import xyz.mcxross.zero.model.ZKLoginRequest
 
-fun zkLogin(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
+suspend fun zkLogin(context: Context, zkLoginRequest: ZKLoginRequest): Intent {
   return ServiceHolder.apply {
-      saltingService =
-        when (zkLoginRequest.saltingService) {
-          is DefaultSaltingService -> // Switch to Android-specific implementation
-          AndroidDefaultSaltingService(zkLoginRequest.saltingService.endPoint)
-          else -> // Okay, we hope the user knows what they're doing, proceed as normal
-          zkLoginRequest.saltingService
-        }
-      provingService = zkLoginRequest.provingService
-    }
-    .run { ZKLoginManagementActivity.createStartIntent(context, zkLoginRequest) }
+        saltingService =
+            when (zkLoginRequest.saltingService) {
+              is DefaultSaltingService -> // Switch to Android-specific implementation
+              AndroidDefaultSaltingService(zkLoginRequest.saltingService.endPoint)
+              else -> // Okay, we hope the user knows what they're doing, proceed as normal
+              zkLoginRequest.saltingService
+            }
+        provingService = zkLoginRequest.provingService
+      }
+      .run { ZKLoginManagementActivity.createStartIntent(context, zkLoginRequest) }
 }
 
-fun zkLogin(context: Context, configAction: ZKLoginRequestConfig.() -> Unit): Intent {
+suspend fun zkLogin(context: Context, configAction: ZKLoginRequestConfig.() -> Unit): Intent {
   val requestWrapper = ZKLoginRequestConfig().apply(configAction)
   val request =
-    with(requestWrapper) {
-      ZKLoginRequest(
-        openIDServiceConfiguration =
-          OpenIDServiceConfiguration(
-            clientId = clientId,
-            redirectUri = redirectUri,
-            nonce = nonce,
-            provider = provider,
-          ),
-        saltingService = saltingService,
-        provingService = provingService
-      )
-    }
+      with(requestWrapper) {
+        ZKLoginRequest(
+            openIDServiceConfiguration =
+                OpenIDServiceConfiguration(
+                    clientId = clientId,
+                    redirectUri = redirectUri,
+                    nonce = nonce,
+                    provider = provider,
+                ),
+            saltingService = saltingService,
+            provingService = provingService)
+      }
   return zkLogin(context, request)
 }
 
 actual open class DefaultZKLoginService(private val context: Context) : ZKLoginService {
-  override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent = zkLogin(context, zkLoginRequest)
+  override fun zkLogin(zkLoginRequest: ZKLoginRequest): Intent = Intent()
 
-  fun zkLogin(configAction: ZKLoginRequestConfig.() -> Unit): Intent {
+  suspend fun zkLogin(configAction: ZKLoginRequestConfig.() -> Unit): Intent {
     val requestWrapper = ZKLoginRequestConfig().apply(configAction)
     val request =
-      with(requestWrapper) {
-        ZKLoginRequest(
-          openIDServiceConfiguration =
-            OpenIDServiceConfiguration(
-              clientId = clientId,
-              redirectUri = redirectUri,
-              nonce = nonce,
-              provider = provider,
-            ),
-          saltingService = saltingService,
-          provingService = provingService
-        )
-      }
+        with(requestWrapper) {
+          ZKLoginRequest(
+              openIDServiceConfiguration =
+                  OpenIDServiceConfiguration(
+                      clientId = clientId,
+                      redirectUri = redirectUri,
+                      nonce = nonce,
+                      provider = provider,
+                  ),
+              saltingService = saltingService,
+              provingService = provingService)
+        }
     return zkLogin(context, request)
   }
 }
@@ -89,6 +87,6 @@ class ZKLoginRequestConfig {
   var redirectUri: String = ""
   var nonce: Nonce = Nonce.FromPubKey("")
   var saltingService: SaltingService =
-    AndroidDefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL)
+      AndroidDefaultSaltingService(Mysten.MYSTEN_LABS_SALTING_SERVICE_URL)
   var provingService: ProvingService = DefaultProvingService(Mysten.MYSTEN_LABS_PROVING_SERVICE_URL)
 }

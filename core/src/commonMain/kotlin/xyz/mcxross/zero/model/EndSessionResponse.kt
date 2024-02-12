@@ -16,8 +16,8 @@ package xyz.mcxross.zero.model
 import com.eygraber.uri.Uri
 
 data class EndSessionResponse(
-  val demo: String? = null,
-) : AuthorizationManagementResponse {
+    val demo: String? = null,
+) : AuthorizationManagementResponse() {
   companion object {
     fun fromUri(uri: Uri): EndSessionResponse {
       return EndSessionResponse()

@@ -35,10 +35,13 @@ fun AuthorizationResponse.Companion.fromIntent(dataIntent: Intent): Authorizatio
  * AuthorizationService#performAuthorizationRequest}.
  */
 fun AuthorizationManagementResponse.toIntent(): Intent =
-  Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
+    Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
 
-infix fun Context.zkLogin(request: ZKLoginRequest): Intent =
-  xyz.mcxross.zero.zkLogin(this, request)
+suspend infix fun Context.zkLogin(request: ZKLoginRequest): Intent =
+    xyz.mcxross.zero.zkLogin(this, request)
 
 fun ZKLoginResponse.toIntent(): Intent =
-  Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
+    Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
+
+fun ZKLoginResponse.fromJson(jsonStr: String): ZKLoginResponse? =
+    Json.decodeFromString(serializer(), jsonStr)

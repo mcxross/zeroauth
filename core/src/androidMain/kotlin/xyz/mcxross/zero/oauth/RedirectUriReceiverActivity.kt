@@ -15,45 +15,37 @@ package xyz.mcxross.zero.oauth
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import io.ktor.util.logging.*
 import xyz.mcxross.zero.oauth.AuthorizationManagementActivity.Companion.createResponseHandlingIntent
 
 /**
  * Activity that receives the redirect Uri sent by the OpenID endpoint. It forwards the data
- * received as part of this redirect to [AuthorizationManagementActivity], which
- * destroys the browser tab before returning the result to the completion
- * [android.app.PendingIntent]
- * provided to [DefaultAuthorizationService.performAuthorizationRequest].
+ * received as part of this redirect to [AuthorizationManagementActivity], which destroys the
+ * browser tab before returning the result to the completion [android.app.PendingIntent] provided to
+ * [DefaultAuthorizationService.performAuthorizationRequest].
  *
- *
- * App developers using this library must override the `appAuthRedirectScheme`
- * property in their `build.gradle` to specify the custom scheme that will be used for
- * the OAuth2 redirect. If custom scheme redirect cannot be used with the identity provider
- * you are integrating with, then a custom intent filter should be defined in your
- * application manifest instead. For example, to handle
+ * App developers using this library must override the `appAuthRedirectScheme` property in their
+ * `build.gradle` to specify the custom scheme that will be used for the OAuth2 redirect. If custom
+ * scheme redirect cannot be used with the identity provider you are integrating with, then a custom
+ * intent filter should be defined in your application manifest instead. For example, to handle
  * `https://www.example.com/oauth2redirect`:
- *
- *
  * ```xml
  * <intent-filter>
  * <action android:name="android.intent.action.VIEW"></action>
  * <category android:name="android.intent.category.DEFAULT"></category>
  * <category android:name="android.intent.category.BROWSABLE"></category>
  * <data android:scheme="https" android:host="www.example.com" android:path="/oauth2redirect"></data>
-</intent-filter> *
+ * </intent-filter> *
  * ```
  */
 class RedirectUriReceiverActivity : AppCompatActivity() {
-    public override fun onCreate(savedInstanceBundle: Bundle?) {
-        super.onCreate(savedInstanceBundle)
+  public override fun onCreate(savedInstanceBundle: Bundle?) {
+    super.onCreate(savedInstanceBundle)
 
-        // while this does not appear to be achieving much, handling the redirect in this way
-        // ensures that we can remove the browser tab from the back stack. See the documentation
-        // on AuthorizationManagementActivity for more details.
-        startActivity(
-            createResponseHandlingIntent(
-                this, intent.data
-            )
-        )
-        finish()
-    }
+    // while this does not appear to be achieving much, handling the redirect in this way
+    // ensures that we can remove the browser tab from the back stack. See the documentation
+    // on AuthorizationManagementActivity for more details.
+    startActivity(createResponseHandlingIntent(this, intent.data))
+    finish()
+  }
 }

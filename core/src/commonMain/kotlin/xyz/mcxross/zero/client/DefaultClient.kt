@@ -17,6 +17,7 @@ import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
+import io.ktor.client.request.forms.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
@@ -24,16 +25,30 @@ class DefaultClient : Client {
   val client = HttpClient(defaultEngine) { install(ContentNegotiation) { json() } }
 
   suspend inline fun <reified T, reified U> request(
-    url: String,
-    request: T,
+      url: String,
+      request: T,
   ): U {
     val response: U =
-      client
-        .post(url) {
-          contentType(ContentType.Application.Json)
-          setBody(request)
-        }
-        .body()
+        client
+            .post(url) {
+              contentType(ContentType.Application.Json)
+              setBody(request)
+            }
+            .body()
+    return response
+  }
+
+  suspend inline fun <reified T> submitForm(
+      url: String,
+      formParameters: Map<String, String>,
+  ): T {
+    val response: T =
+        client
+            .submitForm(
+                url = url,
+                formParameters =
+                    parameters { formParameters.forEach { (key, value) -> append(key, value) } })
+            .body()
     return response
   }
 }

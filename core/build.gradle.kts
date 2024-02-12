@@ -16,10 +16,11 @@ plugins {
 
 group = "xyz.mcxross.zero"
 
-version = "1.0.0-SNAPSHOT"
+version = "1.1.0-SNAPSHOT"
 
 repositories {
   mavenCentral()
+  mavenLocal()
   google()
   maven { url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots") }
 }
@@ -80,6 +81,7 @@ kotlin {
         implementation(libs.ktor.serialization.kotlinx.json)
         implementation(libs.ksui)
         implementation(libs.uri.kmp)
+        implementation(libs.sc)
       }
     }
     val commonTest by getting { dependencies { implementation(kotlin("test")) } }
@@ -99,6 +101,8 @@ kotlin {
         implementation(libs.browser)
         implementation(libs.ktor.client.okhttp)
         implementation(libs.lifecycle.runtime.ktx)
+        implementation(libs.kotlinx.coroutines.android)
+        implementation(libs.activity.ktx)
       }
     }
     val jsMain by getting {
@@ -111,6 +115,10 @@ kotlin {
     val jsTest by getting
     val iosMain by getting
     val iosSimulatorArm64Main by getting { dependsOn(iosMain) }
+    macosMain.dependencies {
+      implementation(libs.ktor.server.core)
+      implementation(libs.ktor.server.cio)
+    }
   }
 }
 

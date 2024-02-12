@@ -20,12 +20,12 @@ import xyz.mcxross.zero.oauth.browser.BrowserSelector
 import xyz.mcxross.zero.oauth.browser.CustomTabManager
 
 actual class DefaultAuthorizationService(
-  val context: Context,
-  val zeroAuthConfiguration: ZeroAuthConfiguration = ZeroAuthConfiguration(),
-  val customTabManager: CustomTabManager = CustomTabManager(context),
-  val browserDescriptor: BrowserDescriptor? =
-    BrowserSelector.select(context, zeroAuthConfiguration.browserMatcher),
-  private var disposable: Boolean = false
+    val context: Context,
+    val zeroAuthConfiguration: ZeroAuthConfiguration = ZeroAuthConfiguration(),
+    val customTabManager: CustomTabManager = CustomTabManager(context),
+    val browserDescriptor: BrowserDescriptor? =
+        BrowserSelector.select(context, zeroAuthConfiguration.browserMatcher),
+    private var disposable: Boolean = false
 ) : AuthorizationService {
 
   /**
@@ -58,17 +58,16 @@ actual class DefaultAuthorizationService(
    *   If null, a default one will be created and used.
    */
   fun performAuthorizationRequest(
-    request: AuthorizationRequest,
-    completedIntent: PendingIntent? = null,
-    canceledIntent: PendingIntent? = null,
-    customTabsIntent: CustomTabsIntent? = null
+      request: AuthorizationRequest,
+      completedIntent: PendingIntent? = null,
+      canceledIntent: PendingIntent? = null,
+      customTabsIntent: CustomTabsIntent? = null
   ) =
-    performAuthManagementRequest(
-      request,
-      completedIntent,
-      canceledIntent,
-      customTabsIntent ?: createCustomTabsIntentBuilder().build()
-    )
+      performAuthManagementRequest(
+          request,
+          completedIntent,
+          canceledIntent,
+          customTabsIntent ?: createCustomTabsIntentBuilder().build())
 
   /**
    * Sends an end session request to the authorization service.
@@ -88,27 +87,22 @@ actual class DefaultAuthorizationService(
    *   null, a default one will be created and used.
    */
   fun performEndSessionRequest(
-    request: EndSessionRequest,
-    completedIntent: PendingIntent,
-    canceledIntent: PendingIntent? = null,
-    customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
+      request: EndSessionRequest,
+      completedIntent: PendingIntent,
+      canceledIntent: PendingIntent? = null,
+      customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
   ) = performAuthManagementRequest(request, completedIntent, canceledIntent, customTabsIntent)
 
   private fun performAuthManagementRequest(
-    request: AuthorizationManagementRequest,
-    completedIntent: PendingIntent?,
-    canceledIntent: PendingIntent?,
-    customTabsIntent: CustomTabsIntent
+      request: AuthorizationManagementRequest,
+      completedIntent: PendingIntent?,
+      canceledIntent: PendingIntent?,
+      customTabsIntent: CustomTabsIntent
   ) {
     val authIntent: Intent = prepareAuthorizationRequestIntent(request, customTabsIntent)
     val startIntent: Intent =
-      AuthorizationManagementActivity.createStartIntent(
-        context,
-        request,
-        authIntent,
-        completedIntent,
-        canceledIntent
-      )
+        AuthorizationManagementActivity.createStartIntent(
+            context, request, authIntent, completedIntent, canceledIntent)
 
     // Calling start activity from outside an activity requires FLAG_ACTIVITY_NEW_TASK.
     if (!isActivity(context)) {
@@ -163,8 +157,8 @@ actual class DefaultAuthorizationService(
    *   perform the authorization flow.
    */
   fun getAuthorizationRequestIntent(
-    request: AuthorizationRequest,
-    customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
+      request: AuthorizationRequest,
+      customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
   ): Intent {
     val authIntent: Intent = prepareAuthorizationRequestIntent(request, customTabsIntent)
     return AuthorizationManagementActivity.createStartForResultIntent(context, request, authIntent)
@@ -188,16 +182,16 @@ actual class DefaultAuthorizationService(
    *   perform the authorization flow.
    */
   fun getEndSessionRequestIntent(
-    request: EndSessionRequest,
-    customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
+      request: EndSessionRequest,
+      customTabsIntent: CustomTabsIntent = createCustomTabsIntentBuilder().build()
   ): Intent {
     val authIntent: Intent = prepareAuthorizationRequestIntent(request, customTabsIntent)
     return AuthorizationManagementActivity.createStartForResultIntent(context, request, authIntent)
   }
 
   private fun prepareAuthorizationRequestIntent(
-    request: AuthorizationManagementRequest,
-    customTabsIntent: CustomTabsIntent
+      request: AuthorizationManagementRequest,
+      customTabsIntent: CustomTabsIntent
   ): Intent {
     checkNotDisposed()
     if (browserDescriptor == null) {
@@ -205,22 +199,19 @@ actual class DefaultAuthorizationService(
     }
 
     val requestUri: Uri = (request as AuthorizationRequest).toUri().toAndroidUri()
+    Logger.debug("REQUEST URI: $requestUri")
     val intent: Intent =
-      if (browserDescriptor.useCustomTab) {
-        customTabsIntent.intent
-      } else {
-        Intent(Intent.ACTION_VIEW)
-      }
+        if (browserDescriptor.useCustomTab) {
+          customTabsIntent.intent
+        } else {
+          Intent(Intent.ACTION_VIEW)
+        }
     intent.setPackage(browserDescriptor.packageName)
     intent.setData(requestUri)
     Logger.debug(
-      "Using %s as browser for auth, custom tab = %s",
-      intent.getPackage()!!,
-      browserDescriptor.useCustomTab.toString()
-    )
+        "Using ${intent.`package`} as browser for auth, custom tab = ${browserDescriptor.useCustomTab}")
     Logger.debug(
-      "Initiating authorization request to ${if (request is AuthorizationRequest) request.configuration.authorizationEndpoint else if (request is EndSessionRequest) "" else requestUri}"
-    )
+        "Initiating authorization request to ${if (request is AuthorizationRequest) request.configuration.authorizationEndpoint else if (request is EndSessionRequest) "" else requestUri}")
     return intent
   }
 

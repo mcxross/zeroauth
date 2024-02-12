@@ -22,9 +22,13 @@ ktor-server-cio = { module = "io.ktor:ktor-server-cio", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.7.2" }
-ksui = { module = "xyz.mcxross.ksui:ksui", version = "1.3.1" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.7.3" }
+ksui = { module = "xyz.mcxross.ksui:ksui", version = "1.3.2" }
 uri-kmp = { module = "com.eygraber:uri-kmp", version = "0.0.15" }
 appcompat = { module = "androidx.appcompat:appcompat", version = "1.6.1" }
 browser = { module = "androidx.browser:browser", version = "1.7.0" }
-lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.6.2" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version = "2.7.0" }
+sc = { module = "xyz.mcxross.sc:sc", version = "1.0.0-SNAPSHOT" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version = "1.7.3" }
+lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version = "2.7.0" }
+activity-ktx = { module = "androidx.activity:activity-ktx", version = "1.8.2" }

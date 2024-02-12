@@ -21,7 +21,8 @@ import kotlinx.serialization.Serializable
 @JsExport
 @Serializable
 data class ZKLoginResponse(
-  val request: AuthorizationManagementRequest,
-  val saltResponse: SaltResponse,
-  val proofResponse: ProofResponse,
+    val request: AuthorizationManagementRequest,
+    val tokenInfo: TokenInfo,
+    val saltResponse: SaltResponse? = null, // TODO: Temporary
+    val proofResponse: ProofResponse? = null, // TODO: Temporary
 )

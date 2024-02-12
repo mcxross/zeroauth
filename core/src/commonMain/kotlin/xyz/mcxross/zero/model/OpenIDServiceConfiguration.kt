@@ -13,18 +13,18 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlinx.serialization.Serializable
 import kotlin.js.ExperimentalJsExport
 import kotlin.js.JsExport
 import kotlin.js.JsName
+import kotlinx.serialization.Serializable
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
 @JsName("OpenIDServiceConfiguration")
 @Serializable
 data class OpenIDServiceConfiguration(
-  val provider: Provider,
-  val clientId: String,
-  val redirectUri: String,
-  val nonce: Nonce,
+    val provider: Provider,
+    val clientId: String,
+    val redirectUri: String,
+    val nonce: Nonce = Nonce.FromPubKey()
 )

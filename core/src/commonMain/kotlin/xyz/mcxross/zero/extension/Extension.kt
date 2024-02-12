@@ -21,48 +21,55 @@ import xyz.mcxross.zero.model.ZKLoginRequest
 
 fun ZKLoginRequest.toAuthorizationRequest(): AuthorizationRequest {
   val authServiceConfig =
-    with(openIDServiceConfiguration.provider) {
-      AuthorizationServiceConfiguration(
-        authorizationEndpoint,
-        tokenEndpoint,
-        revocationEndpoint,
-        registrationEndpoint
-      )
-    }
+      with(openIDServiceConfiguration.provider) {
+        AuthorizationServiceConfiguration(
+            authorizationEndpoint, tokenEndpoint, revocationEndpoint, registrationEndpoint)
+      }
 
   return AuthorizationRequest(
-    configuration = authServiceConfig,
-    clientId = openIDServiceConfiguration.clientId,
-    responseType = "id_token",
-    redirectUri = openIDServiceConfiguration.redirectUri,
-    scope = Scope.OpenID,
-    nonce = openIDServiceConfiguration.nonce.toString(),
+      configuration = authServiceConfig,
+      clientId = openIDServiceConfiguration.clientId,
+      responseType = "id_token",
+      redirectUri = openIDServiceConfiguration.redirectUri,
+      scope = Scope.OpenID,
+      nonce = openIDServiceConfiguration.nonce.toString(),
   )
 }
 
 fun ZKLoginRequest.toAuthorizationRequest(callback: (AuthorizationRequest) -> Unit) {
   determineNonce(openIDServiceConfiguration.nonce, endPoint) { nonce ->
     val authServiceConfig =
-      with(openIDServiceConfiguration.provider) {
-        AuthorizationServiceConfiguration(
-          authorizationEndpoint,
-          tokenEndpoint,
-          revocationEndpoint,
-          registrationEndpoint
-        )
-      }
+        with(openIDServiceConfiguration.provider) {
+          AuthorizationServiceConfiguration(
+              authorizationEndpoint, tokenEndpoint, revocationEndpoint, registrationEndpoint)
+        }
     callback(
-      AuthorizationRequest(
-        configuration = authServiceConfig,
-        clientId = openIDServiceConfiguration.clientId,
-        responseType = "id_token",
-        redirectUri = openIDServiceConfiguration.redirectUri,
-        scope = Scope.OpenID,
-        nonce = nonce,
-      )
-    )
+        AuthorizationRequest(
+            configuration = authServiceConfig,
+            clientId = openIDServiceConfiguration.clientId,
+            responseType = "id_token",
+            redirectUri = openIDServiceConfiguration.redirectUri,
+            scope = Scope.OpenID,
+            nonce = nonce,
+        ))
   }
 }
 
+suspend fun ZKLoginRequest.toAuthorizationRequestAsync(): AuthorizationRequest {
+  val authServiceConfig =
+      with(openIDServiceConfiguration.provider) {
+        AuthorizationServiceConfiguration(
+            authorizationEndpoint, tokenEndpoint, revocationEndpoint, registrationEndpoint)
+      }
+  return AuthorizationRequest(
+      configuration = authServiceConfig,
+      clientId = openIDServiceConfiguration.clientId,
+      // TODO: a quick fix for native client (Android) to use code flow
+      responseType = "code",
+      redirectUri = openIDServiceConfiguration.redirectUri,
+      scope = Scope.OpenID,
+      nonce = openIDServiceConfiguration.nonce.generateAsync(endPoint))
+}
+
 private fun determineNonce(nonce: Nonce, url: String, callback: (String) -> Unit) =
-  nonce.generate(url, callback)
+    nonce.generate(url, callback)

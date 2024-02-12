@@ -19,25 +19,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import xyz.mcxross.zero.extension.toAuthorizationRequest
+import xyz.mcxross.zero.extension.toAuthorizationRequestAsync
 import xyz.mcxross.zero.internal.Logger
-import xyz.mcxross.zero.login.AndroidDefaultProvingService
-import xyz.mcxross.zero.login.AndroidDefaultSaltingService
 import xyz.mcxross.zero.model.AuthorizationManagementRequest
 import xyz.mcxross.zero.model.AuthorizationRequest
-import xyz.mcxross.zero.model.DefaultProofRequest
-import xyz.mcxross.zero.model.DefaultSaltRequest
-import xyz.mcxross.zero.model.DefaultSaltResponse
-import xyz.mcxross.zero.model.LiveDataProofResponse
-import xyz.mcxross.zero.model.LiveDataSaltResponse
-import xyz.mcxross.zero.model.ProofResponse
-import xyz.mcxross.zero.model.ProvingResponseWrapper
-import xyz.mcxross.zero.model.SaltResponse
-import xyz.mcxross.zero.model.SaltResponseWrapper
-import xyz.mcxross.zero.model.ServiceHolder
+import xyz.mcxross.zero.model.TokenInfo
+import xyz.mcxross.zero.model.TokenViewModel
 import xyz.mcxross.zero.model.ZKLoginRequest
 import xyz.mcxross.zero.model.ZKLoginResponse
 import xyz.mcxross.zero.oauth.AuthorizationManagementUtil
@@ -59,9 +54,9 @@ class ZKLoginManagementActivity : AppCompatActivity() {
       registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         when (result.resultCode) {
           Activity.RESULT_OK -> {
-            Logger.debug(TAG, "onActivityResult OK: ${result.data}")
             data = result.data
-            handleZKLogin(data)
+            Logger.debug("Code: ${data?.data?.getQueryParameter("code")}")
+            performTokenFetch()
           }
           else -> {
             Logger.debug(TAG, "onActivityResult CANCELLED")
@@ -71,10 +66,17 @@ class ZKLoginManagementActivity : AppCompatActivity() {
         }
       }
 
+  private val tokenViewModel: TokenViewModel by viewModels()
+
   @Override
   public override fun onCreate(savedInstanceBundle: Bundle?) {
     super.onCreate(savedInstanceBundle)
     extractState(savedInstanceBundle ?: intent.extras)
+    lifecycleScope.launch {
+      repeatOnLifecycle(Lifecycle.State.STARTED) {
+        tokenViewModel.tokenUiState.collect { it -> it?.tokenInfo?.let { finishZKLogin(it) } }
+      }
+    }
   }
 
   override fun onResume() {
@@ -128,110 +130,7 @@ class ZKLoginManagementActivity : AppCompatActivity() {
         }
   }
 
-  private fun handleZKLogin(data: Intent?) {
-    data
-        ?: run {
-          Logger.warn(TAG, "data is null, terminating")
-          sendResult(RESULT_CANCELED, null)
-          finish()
-          return
-        }
-    val salt = handleSalting()
-    val proof = handleProving(salt)
-    finishZKLogin(salt, proof)
-  }
-
-  private fun handleSalting(): SaltResponse {
-    val saltingService = ServiceHolder.saltingService
-    val saltResponseWrapper: SaltResponseWrapper?
-    var actualSalt: SaltResponse? = null
-
-    if (saltingService == null) {
-      Logger.warn(TAG, "SaltingService is null, terminating with data: $data")
-      sendResult(Constant.SALTING_FAIL_SERVICE_NOT_DEFINED, data)
-      // We can now terminate the activity
-      finish()
-    }
-
-    when (saltingService) {
-      is AndroidDefaultSaltingService -> {
-        Logger.debug(TAG, "SaltingService is AndroidDefaultSaltingService, performing salting")
-        val androidDefaultSaltingService =
-            ServiceHolder.saltingService as AndroidDefaultSaltingService
-        // We need this to launch coroutines
-        androidDefaultSaltingService.lifecycleOwner = this
-
-        saltResponseWrapper = androidDefaultSaltingService.salt(DefaultSaltRequest(""))
-      }
-      else -> {
-        // Just call the salt method
-        saltResponseWrapper = saltingService?.salt(DefaultSaltRequest(""))
-      }
-    }
-
-    if (saltResponseWrapper is LiveDataSaltResponse) {
-      Logger.debug(TAG, "SaltResponseWrapper is LiveDataSaltResponse, succeeding")
-      saltResponseWrapper.liveData.observe(this) { salt ->
-        Logger.debug(TAG, "SaltResponseWrapper LiveData changed, succeeding")
-        actualSalt = salt ?: return@observe
-      }
-    } else {
-      // Just a normal SaltResponseWrapper
-      Logger.debug(TAG, "SaltResponseWrapper is not LiveDataSaltResponse, succeeding")
-      if (saltResponseWrapper != null) {
-        actualSalt = saltResponseWrapper.saltResponse
-      } else {
-        // TODO: Handle this. User implemented SaltingService is returning null
-      }
-    }
-    return actualSalt!!
-  }
-
-  private fun handleProving(salt: SaltResponse): ProofResponse {
-    // Now we make a request to the proving service
-    val provingService = ServiceHolder.provingService
-    val provingResponseWrapper: ProvingResponseWrapper?
-    var proofResponse: ProofResponse? = null
-
-    if (provingService == null) {
-      Logger.warn(TAG, "ProvingService is null, terminating with data: $data")
-      sendResult(Constant.PROVING_SERVICE_FAIL, data)
-      // We can now terminate the activity
-      finish()
-    }
-
-    when (provingService) {
-      is AndroidDefaultProvingService -> {
-        Logger.debug(TAG, "ProvingService is AndroidDefaultProvingService, performing proving")
-        val androidDefaultProvingService =
-            ServiceHolder.provingService as AndroidDefaultProvingService
-        // We need this to launch coroutines
-        androidDefaultProvingService.lifecycleOwner = this
-        provingResponseWrapper =
-            provingService.prove(
-                DefaultProofRequest("", "", 2, "", (salt as DefaultSaltResponse).salt, ""))
-      }
-      else -> {
-        // Just call the salt method
-        provingResponseWrapper = provingService?.prove(DefaultProofRequest("", "", 2, "", "", ""))
-      }
-    }
-
-    if (provingResponseWrapper is LiveDataProofResponse) {
-      Logger.debug(TAG, "ProvingResponseWrapper is LiveDataProofResponse, succeeding")
-      provingResponseWrapper.liveData.observe(this) { proof ->
-        Logger.debug(TAG, "ProvingResponseWrapper LiveData changed, succeeding")
-        proofResponse = proof ?: return@observe
-      }
-    } else {
-      Logger.warn(TAG, "ProvingResponseWrapper is not LiveDataProofResponse, failing")
-      sendResult(Constant.PROVING_SERVICE_FAIL, null)
-      finish()
-    }
-    return proofResponse!!
-  }
-
-  private fun finishZKLogin(saltResponseWrapper: SaltResponse, proof: ProofResponse) {
+  private fun performTokenFetch() {
     val currentRequest = request
     if (currentRequest == null) {
       Logger.warn(TAG, "Request is null, cannot finish ZKLogin")
@@ -239,9 +138,13 @@ class ZKLoginManagementActivity : AppCompatActivity() {
       return
     }
 
+    tokenViewModel.fetchToken(
+        data?.data?.getQueryParameter("code") ?: "", currentRequest as AuthorizationRequest)
+  }
+
+  private fun finishZKLogin(tokenInfo: TokenInfo) {
     val zkLoginResponse =
-        ZKLoginResponse(
-            request = currentRequest, saltResponse = saltResponseWrapper, proofResponse = proof)
+        ZKLoginResponse(request = request as AuthorizationRequest, tokenInfo = tokenInfo)
 
     val intent: Intent =
         Intent().apply {
@@ -264,16 +167,17 @@ class ZKLoginManagementActivity : AppCompatActivity() {
 
     private const val KEY_ZK_LOGIN_REQUEST = "zkLoginRequest"
 
-    fun createStartIntent(
+    suspend fun createStartIntent(
         context: Context,
         request: ZKLoginRequest,
     ): Intent {
-      val authorizationRequest = request.toAuthorizationRequest()
 
       return Intent(context, ZKLoginManagementActivity::class.java).apply {
-        putExtra(KEY_AUTH_REQUEST, Json.encodeToString(serializer(), authorizationRequest))
+        putExtra(
+            KEY_AUTH_REQUEST,
+            Json.encodeToString(serializer(), request.toAuthorizationRequestAsync()))
         Logger.debug(
-            "createStartIntent", "$KEY_AUTH_REQUEST: ${Json.encodeToString(serializer(), request)}")
+            "createStartIntent${Json.encodeToString(serializer(), request.toAuthorizationRequestAsync())}")
       }
     }
   }

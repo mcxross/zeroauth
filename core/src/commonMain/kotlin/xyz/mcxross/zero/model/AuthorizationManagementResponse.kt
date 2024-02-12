@@ -13,6 +13,9 @@
  */
 package xyz.mcxross.zero.model
 
-interface AuthorizationManagementResponse {
-  val state: String?
+import kotlinx.serialization.Serializable
+
+@Serializable
+sealed class AuthorizationManagementResponse {
+  abstract val state: String?
 }
