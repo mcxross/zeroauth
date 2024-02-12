@@ -14,5 +14,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--
+       This activity declaration is merged with the version from the library manifest.
+       It demonstrates how an https redirect can be captured, in addition to or instead of
+       a custom scheme.
+
+       Generally, this should be done in conjunction with an app link declaration for Android M
+       and above, for additional security and an improved user experience. See:
+
+       https://developer.android.com/training/app-links/index.html
+
+       The declaration from the library can be completely replaced by adding
+
+       tools:node="replace"
+
+       To the list of attributes on the activity element.
+       -->
+        <activity
+                android:name="xyz.mcxross.zero.oauth.RedirectUriReceiverActivity"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="your_custom_scheme"
+                      android:path="/oauth2redirect"/>
+            </intent-filter>
+        </activity>
+
     </application>
 </manifest> 
