@@ -2,7 +2,7 @@ export const navbarEn = [
     {
         text: "Platforms", children: [
             {text: "Android", link: "/platform/android/introduction"},
-            /*{text: "iOS", link: "/platform/ios"},*/
+            {text: "iOS", link: "/platform/ios/introduction"},
             {text: "Web", link: "/platform/web/introduction"},
             {text: "Desktop", link: "/platform/desktop/introduction"},]
     },

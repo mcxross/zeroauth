@@ -21,6 +21,17 @@ export const sidebarEn = {
 
         },
     ],
+    '/platform/ios': [
+        {
+            text: 'iOS',
+            children: [
+                '/platform/ios/introduction',
+                '/platform/ios/conceptual-overview',
+                '/platform/ios/quick-start',
+            ]
+
+        }
+    ],
     '/platform/web': [
         {
             text: 'Web',
