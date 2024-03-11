@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-e3eb5b20","path":"/platform/ios/conceptual-overview.html","title":"Conceptual Overview","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1710169720000,"contributors":[{"name":"astinz","email":"28899947+astinz@users.noreply.github.com","commits":2}]},"filePathRelative":"platform/ios/conceptual-overview.md"}');export{e as data};

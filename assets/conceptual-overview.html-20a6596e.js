@@ -1,0 +1,1 @@
+const e=JSON.parse('{"key":"v-b609a664","path":"/platform/android/conceptual-overview.html","title":"Conceptual Overview","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1698821433000,"contributors":[{"name":"@a","email":"28899947+astinz@users.noreply.github.com","commits":1}]},"filePathRelative":"platform/android/conceptual-overview.md"}');export{e as data};

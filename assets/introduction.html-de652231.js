@@ -1,0 +1,1 @@
+const t=JSON.parse('{"key":"v-f6088fcc","path":"/platform/ios/introduction.html","title":"Introduction","lang":"en-US","frontmatter":{},"headers":[],"git":{"updatedTime":1708294313000,"contributors":[{"name":"astinz","email":"28899947+astinz@users.noreply.github.com","commits":1}]},"filePathRelative":"platform/ios/introduction.md"}');export{t as data};
