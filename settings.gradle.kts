@@ -17,6 +17,6 @@ plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
 
 rootProject.name = "zeroauth"
 
-include(":core")
+include(":lib")
 
-project(":core").name = "zero"
+project(":lib").name = "zero"
