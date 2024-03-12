@@ -10,3 +10,7 @@ actual fun generateNonce(
     maxEpoch: Long,
     randomness: String
 ): String = "nonce"
+
+actual fun generateKey(): String {
+  TODO("Not yet implemented")
+}

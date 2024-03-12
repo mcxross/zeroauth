@@ -32,7 +32,7 @@ fun zkLogin(zkLoginRequest: ZKLoginRequest, zkLoginFeedback: ZKLoginFeedback? = 
       if (Desktop.isDesktopSupported()) {
         val desktop = Desktop.getDesktop()
         if (desktop.isSupported(Desktop.Action.BROWSE)) {
-          desktop.browse(zkLoginRequest.toAuthorizationRequest().toUri().toURI())
+          zkLoginRequest.toAuthorizationRequest { desktop.browse(it.toUri().toURI()) }
         }
       }
 
