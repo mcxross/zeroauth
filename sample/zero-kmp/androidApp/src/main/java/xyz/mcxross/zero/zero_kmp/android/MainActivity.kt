@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
           if (!zkLoginSuccess.value) {
             HomeView(this@MainActivity, zkLoginResultLauncher)
           } else {
-            activityResult?.data?.getStringExtra("zkLoginResponse")
             WalletView(this@MainActivity, zkLoginResponse!!)
           }
         }

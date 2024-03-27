@@ -31,7 +31,6 @@ import xyz.mcxross.ksui.client.EndPoint
 import xyz.mcxross.ksui.client.suiHttpClient
 import xyz.mcxross.ksui.model.SuiAddress
 import xyz.mcxross.ksui.util.requestTestTokens
-import xyz.mcxross.sc.SuiCommons
 import xyz.mcxross.zero.model.ZKLoginResponse
 
 @Composable
@@ -39,23 +38,15 @@ fun WalletView(context: Context, zkLoginResponse: ZKLoginResponse) {
   var balance = remember { mutableLongStateOf(0L) }
   val coroutineScope = rememberCoroutineScope()
   val suiHttpClient = remember { suiHttpClient { endpoint = EndPoint.DEVNET } }
-  var myAddress by remember { mutableStateOf("") }
+  var myAddress by remember { mutableStateOf(zkLoginResponse.address) }
 
   // This state is used to trigger balance updates.
   val updateTrigger = remember { mutableIntStateOf(0) }
 
-  LaunchedEffect(key1 = Unit) {
-    myAddress =
-      SuiCommons.zkLogin.generateAddress(
-        zkLoginResponse.tokenInfo.idToken,
-        "129390038577185583942388216820280642146", // Reminder: Replace with a secure method for
-        // production
-      )
-  }
-
   LaunchedEffect(key1 = updateTrigger.intValue, key2 = myAddress) {
-    if (myAddress.isNotEmpty()) {
-      balance.longValue = suiHttpClient.getBalance(SuiAddress(myAddress)).totalBalance
+    if (myAddress?.isNotEmpty() == true) {
+
+      balance.longValue = suiHttpClient.getBalance(SuiAddress(myAddress!!)).totalBalance
     }
   }
 
@@ -88,7 +79,7 @@ fun WalletView(context: Context, zkLoginResponse: ZKLoginResponse) {
     Divider()
     Column {
       Text(
-        myAddress,
+        myAddress ?: "No Address",
         modifier = Modifier.padding(4.dp),
         fontWeight = FontWeight.Normal,
         fontSize = MaterialTheme.typography.body1.fontSize,
@@ -110,8 +101,8 @@ fun WalletView(context: Context, zkLoginResponse: ZKLoginResponse) {
     Button(
       onClick = {
         coroutineScope.launch {
-          if (myAddress.isNotEmpty()) {
-            suiHttpClient.requestTestTokens(SuiAddress(myAddress))
+          if (myAddress?.isNotEmpty() == true) {
+            suiHttpClient.requestTestTokens(SuiAddress(myAddress!!))
           }
         }
       },

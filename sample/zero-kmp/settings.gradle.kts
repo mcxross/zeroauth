@@ -17,4 +17,12 @@ dependencyResolutionManagement {
 
 rootProject.name = "zero-kmp"
 
-include(":androidApp", ":shared", ":jvmApp")
+include(
+  ":androidApp",
+  ":shared",
+  ":jvmApp",
+  ":macosArm64App",
+  ":macosX64App",
+  ":linuxX64",
+  ":mingwX64",
+)
