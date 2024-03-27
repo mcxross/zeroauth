@@ -28,20 +28,28 @@ import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import xyz.mcxross.suiness.OidcProvider
+import xyz.mcxross.suiness.generateZkLoginAddress
 import xyz.mcxross.zero.exception.ZeroAuthNetworkException
 import xyz.mcxross.zero.extension.toAuthorizationReques
 import xyz.mcxross.zero.extension.toAuthorizationRequestAsync
 import xyz.mcxross.zero.internal.Logger
+import xyz.mcxross.zero.model.Apple
 import xyz.mcxross.zero.model.AuthorizationManagementRequest
 import xyz.mcxross.zero.model.AuthorizationRequest
+import xyz.mcxross.zero.model.Ghost
+import xyz.mcxross.zero.model.Google
 import xyz.mcxross.zero.model.LiveDataProofResponse
 import xyz.mcxross.zero.model.Nonce
 import xyz.mcxross.zero.model.OpenIDServiceConfiguration
 import xyz.mcxross.zero.model.Proof
+import xyz.mcxross.zero.model.Provider
 import xyz.mcxross.zero.model.Salt
 import xyz.mcxross.zero.model.ServiceHolder
+import xyz.mcxross.zero.model.Slack
 import xyz.mcxross.zero.model.TokenInfo
 import xyz.mcxross.zero.model.TokenViewModel
+import xyz.mcxross.zero.model.Twitch
 import xyz.mcxross.zero.model.ZKLoginRequest
 import xyz.mcxross.zero.model.ZKLoginResponse
 import xyz.mcxross.zero.oauth.AuthorizationManagementUtil
@@ -50,6 +58,7 @@ import xyz.mcxross.zero.oauth.DefaultAuthorizationService
 import xyz.mcxross.zero.rpc.epoch
 import xyz.mcxross.zero.service.AndroidDefaultProvingService
 import xyz.mcxross.zero.service.AndroidDefaultSaltingService
+import xyz.mcxross.zero.service.DefaultSaltingService
 
 class ZKLoginManagementActivity : AppCompatActivity() {
   private val TAG = "ZKLoginManagementActivity"
@@ -215,7 +224,9 @@ class ZKLoginManagementActivity : AppCompatActivity() {
             Logger.debug("Finish zkLogin with Nonce.FromComponents")
             ZKLoginResponse(
                 oidc = it.openIDServiceConfiguration,
-                it.openIDServiceConfiguration.nonce.kp.address,
+                generateZkLoginAddress(determineProvider(it.openIDServiceConfiguration.provider), tokenInfo.idToken,
+                  (ServiceHolder.saltingService as? AndroidDefaultSaltingService)?.salt ?: "",
+                ),
                 it.openIDServiceConfiguration.nonce.kp.toString(),
                 tokenInfo = tokenInfo,
                 salt = Salt(""),
@@ -242,6 +253,17 @@ class ZKLoginManagementActivity : AppCompatActivity() {
     sendResult(Activity.RESULT_OK, intent)
 
     finish()
+  }
+
+  private fun determineProvider(provider: Provider): OidcProvider {
+    return when (provider) {
+      is Ghost -> OidcProvider.GOOGLE
+      is Google -> OidcProvider.GOOGLE
+      is Apple -> OidcProvider.GOOGLE
+      is Twitch -> OidcProvider.TWITCH
+      is Slack -> OidcProvider.SLACK
+      else -> OidcProvider.GOOGLE
+    }
   }
 
   private fun sendResult(resultCode: Int, data: Intent?) {
