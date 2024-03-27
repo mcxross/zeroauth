@@ -13,16 +13,15 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlinx.serialization.Serializable
 
-@OptIn(ExperimentalJsExport::class)
-@JsExport
+/** A response from the zkLogin flow. */
 @Serializable
 data class ZKLoginResponse(
-    val request: AuthorizationManagementRequest,
+    val oidc: OpenIDServiceConfiguration,
+    val address: String? = null,
+    val kp: String? = null,
     val tokenInfo: TokenInfo,
-    val saltResponse: SaltResponse? = null, // TODO: Temporary
-    val proofResponse: ProofResponse? = null, // TODO: Temporary
+    val salt: Salt?,
+    val proof: Proof?
 )

@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.Constant.DEFAULT_MAX_EPOCH
 import xyz.mcxross.zero.rpc.epoch
-import xyz.mcxross.zero.serializer.DynamicSerializer
+import xyz.mcxross.zero.serializer.KeyDetailsSerializer
 import xyz.mcxross.zero.util.generateNonce
 import xyz.mcxross.zero.util.generateRandomness
 
@@ -41,9 +41,9 @@ sealed class Nonce {
   @JsName("FromPubKey")
   @Serializable
   data class FromPubKey(
-    @Serializable(with = DynamicSerializer::class) val pubKey: Any,
-    val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
-    val randomness: String = generateRandomness()
+      @Serializable(with = KeyDetailsSerializer::class) val pubKey: Any,
+      val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
+      val randomness: String = generateRandomness()
   ) : Nonce() {
     @OptIn(DelicateCoroutinesApi::class)
     override fun generate(endPoint: String, callback: (String) -> Unit) {

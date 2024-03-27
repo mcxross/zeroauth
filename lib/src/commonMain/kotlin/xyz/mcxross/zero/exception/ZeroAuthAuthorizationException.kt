@@ -17,28 +17,29 @@ import com.eygraber.uri.Uri
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.ACCESS_DENIED
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.INVALID_REQUEST
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.INVALID_SCOPE
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.OTHER
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.UNAUTHORIZED_CLIENT
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.UNSUPPORTED_RESPONSE_TYPE
-import xyz.mcxross.zero.exception.AuthorizationException.AuthorizationRequestErrors.exceptionMapByString
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.ACCESS_DENIED
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.INVALID_REQUEST
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.INVALID_SCOPE
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.OTHER
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.UNAUTHORIZED_CLIENT
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.UNSUPPORTED_RESPONSE_TYPE
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.AuthorizationRequestErrors.exceptionMapByString
 import xyz.mcxross.zero.serializer.ThrowableSerializer
 
 @Serializable
-data class AuthorizationException(
-  val type: Int,
-  val code: Int,
-  val error: String?,
-  val errorDescription: String?,
-  val errorUri: Uri?,
-  @Serializable(with = ThrowableSerializer::class) val rootCause: Throwable?
+data class ZeroAuthAuthorizationException(
+    val type: Int,
+    val code: Int,
+    val error: String?,
+    val errorDescription: String?,
+    val errorUri: Uri?,
+    @Serializable(with = ThrowableSerializer::class) val rootCause: Throwable?
 ) : Exception(errorDescription, rootCause) {
 
   companion object {
     /**
-     * The extra string that used to store an [AuthorizationException] in an intent by [.toIntent].
+     * The extra string that used to store an [ZeroAuthAuthorizationException] in an intent by
+     * [.toIntent].
      */
     const val EXTRA_EXCEPTION = "net.openid.appauth.AuthorizationException"
 
@@ -100,131 +101,108 @@ data class AuthorizationException(
     /** The error type for OAuth specific errors on the registration endpoint. */
     const val TYPE_OAUTH_REGISTRATION_ERROR = 4
 
-    private val STRING_TO_EXCEPTION: Map<String, AuthorizationException> =
-      exceptionMapByString(
-        INVALID_REQUEST,
-        UNAUTHORIZED_CLIENT,
-        ACCESS_DENIED,
-        UNSUPPORTED_RESPONSE_TYPE,
-        INVALID_SCOPE,
-        /*  SERVER_ERROR,
-        LocationProvider.TEMPORARILY_UNAVAILABLE,
-        SipErrorCode.CLIENT_ERROR,*/
-        OTHER
-      )
+    private val STRING_TO_EXCEPTION: Map<String, ZeroAuthAuthorizationException> =
+        exceptionMapByString(
+            INVALID_REQUEST,
+            UNAUTHORIZED_CLIENT,
+            ACCESS_DENIED,
+            UNSUPPORTED_RESPONSE_TYPE,
+            INVALID_SCOPE,
+            /*  SERVER_ERROR,
+            LocationProvider.TEMPORARILY_UNAVAILABLE,
+            SipErrorCode.CLIENT_ERROR,*/
+            OTHER)
 
-    fun byString(error: String?): AuthorizationException {
-      val ex: AuthorizationException? = STRING_TO_EXCEPTION[error]
+    fun byString(error: String?): ZeroAuthAuthorizationException {
+      val ex: ZeroAuthAuthorizationException? = STRING_TO_EXCEPTION[error]
       return ex ?: OTHER
     }
 
-    fun authEx(code: Int, error: String?): AuthorizationException {
-      return AuthorizationException(TYPE_OAUTH_AUTHORIZATION_ERROR, code, error, null, null, null)
+    fun authEx(code: Int, error: String?): ZeroAuthAuthorizationException {
+      return ZeroAuthAuthorizationException(
+          TYPE_OAUTH_AUTHORIZATION_ERROR, code, error, null, null, null)
     }
 
-    private fun generalEx(code: Int, errorDescription: String?): AuthorizationException {
-      return AuthorizationException(TYPE_GENERAL_ERROR, code, null, errorDescription, null, null)
+    private fun generalEx(code: Int, errorDescription: String?): ZeroAuthAuthorizationException {
+      return ZeroAuthAuthorizationException(
+          TYPE_GENERAL_ERROR, code, null, errorDescription, null, null)
     }
 
     /**
      * Creates an exception based on one of the existing values defined in [GeneralErrors],
      * [AuthorizationRequestErrors] or [TokenRequestErrors], providing a root cause.
      */
-    fun fromTemplate(ex: AuthorizationException, rootCause: Throwable?): AuthorizationException {
-      return AuthorizationException(
-        ex.type,
-        ex.code,
-        ex.error,
-        ex.errorDescription,
-        ex.errorUri,
-        rootCause
-      )
+    fun fromTemplate(
+        ex: ZeroAuthAuthorizationException,
+        rootCause: Throwable?
+    ): ZeroAuthAuthorizationException {
+      return ZeroAuthAuthorizationException(
+          ex.type, ex.code, ex.error, ex.errorDescription, ex.errorUri, rootCause)
     }
 
-    fun toJsonString(exception: AuthorizationException): String {
+    fun toJsonString(exception: ZeroAuthAuthorizationException): String {
       return Json.encodeToString(exception)
     }
 
-    fun fromJsonString(jsonStr: String): AuthorizationException {
+    fun fromJsonString(jsonStr: String): ZeroAuthAuthorizationException {
       return Json.decodeFromString(jsonStr)
     }
 
     /** Creates an exception from an OAuth redirect URI that describes an authorization failure. */
-    fun fromOAuthRedirect(redirectUri: Uri): AuthorizationException {
+    fun fromOAuthRedirect(redirectUri: Uri): ZeroAuthAuthorizationException {
       val error: String? = redirectUri.getQueryParameter(PARAM_ERROR)
       val errorDescription: String? = redirectUri.getQueryParameter(PARAM_ERROR_DESCRIPTION)
       val errorUri: String? = redirectUri.getQueryParameter(PARAM_ERROR_URI)
       val (type, code, _, errorDescription1, errorUri1) = AuthorizationRequestErrors.byString(error)
-      return AuthorizationException(
-        type,
-        code,
-        error,
-        errorDescription ?: errorDescription1,
-        if (errorUri != null) Uri.parse(errorUri) else errorUri1,
-        null
-      )
+      return ZeroAuthAuthorizationException(
+          type,
+          code,
+          error,
+          errorDescription ?: errorDescription1,
+          if (errorUri != null) Uri.parse(errorUri) else errorUri1,
+          null)
     }
   }
 
-
   /**
-   * Error codes specific to AppAuth for Android, rather than those defined in the OAuth2 and
-   * OpenID specifications.
+   * Error codes specific to AppAuth for Android, rather than those defined in the OAuth2 and OpenID
+   * specifications.
    */
   object GeneralErrors {
     // codes in this group should be between 0-999
-    /**
-     * Indicates a problem parsing an OpenID Connect Service Discovery document.
-     */
+    /** Indicates a problem parsing an OpenID Connect Service Discovery document. */
     val INVALID_DISCOVERY_DOCUMENT = generalEx(0, "Invalid discovery document")
 
-    /**
-     * Indicates the user manually canceled the OAuth authorization code flow.
-     */
+    /** Indicates the user manually canceled the OAuth authorization code flow. */
     val USER_CANCELED_AUTH_FLOW = generalEx(1, "User cancelled flow")
 
-    /**
-     * Indicates an OAuth authorization flow was programmatically cancelled.
-     */
+    /** Indicates an OAuth authorization flow was programmatically cancelled. */
     val PROGRAM_CANCELED_AUTH_FLOW = generalEx(2, "Flow cancelled programmatically")
 
-    /**
-     * Indicates a network error occurred.
-     */
+    /** Indicates a network error occurred. */
     val NETWORK_ERROR = generalEx(3, "Network error")
 
-    /**
-     * Indicates a server error occurred.
-     */
+    /** Indicates a server error occurred. */
     val SERVER_ERROR = generalEx(4, "Server error")
 
-    /**
-     * Indicates a problem occurred deserializing JSON.
-     */
+    /** Indicates a problem occurred deserializing JSON. */
     val JSON_DESERIALIZATION_ERROR = generalEx(5, "JSON deserialization error")
 
     /**
-     * Indicates a problem occurred constructing a [token response][TokenResponse] object
-     * from the JSON provided by the server.
+     * Indicates a problem occurred constructing a [token response][TokenResponse] object from the
+     * JSON provided by the server.
      */
     val TOKEN_RESPONSE_CONSTRUCTION_ERROR = generalEx(6, "Token response construction error")
 
-    /**
-     * Indicates a problem parsing an OpenID Connect Registration Response.
-     */
+    /** Indicates a problem parsing an OpenID Connect Registration Response. */
     val INVALID_REGISTRATION_RESPONSE = generalEx(7, "Invalid registration response")
 
-    /**
-     * Indicates that a received ID token could not be parsed
-     */
+    /** Indicates that a received ID token could not be parsed */
     val ID_TOKEN_PARSING_ERROR = generalEx(8, "Unable to parse ID Token")
 
-    /**
-     * Indicates that a received ID token is invalid
-     */
+    /** Indicates that a received ID token is invalid */
     val ID_TOKEN_VALIDATION_ERROR = generalEx(9, "Invalid ID Token")
   }
-
 
   /**
    * Error codes related to failed authorization requests.
@@ -234,69 +212,69 @@ data class AuthorizationException(
   object AuthorizationRequestErrors {
     // codes in this group should be between 1000-1999
     /** An `invalid_request` OAuth2 error response. */
-    val INVALID_REQUEST: AuthorizationException = authEx(1000, "invalid_request")
+    val INVALID_REQUEST: ZeroAuthAuthorizationException = authEx(1000, "invalid_request")
 
     /** An `unauthorized_client` OAuth2 error response. */
-    val UNAUTHORIZED_CLIENT: AuthorizationException = authEx(1001, "unauthorized_client")
+    val UNAUTHORIZED_CLIENT: ZeroAuthAuthorizationException = authEx(1001, "unauthorized_client")
 
     /** An `access_denied` OAuth2 error response. */
-    val ACCESS_DENIED: AuthorizationException = authEx(1002, "access_denied")
+    val ACCESS_DENIED: ZeroAuthAuthorizationException = authEx(1002, "access_denied")
 
     /** An `unsupported_response_type` OAuth2 error response. */
-    val UNSUPPORTED_RESPONSE_TYPE: AuthorizationException =
-      authEx(1003, "unsupported_response_type")
+    val UNSUPPORTED_RESPONSE_TYPE: ZeroAuthAuthorizationException =
+        authEx(1003, "unsupported_response_type")
 
     /** An `invalid_scope` OAuth2 error response. */
-    val INVALID_SCOPE: AuthorizationException = authEx(1004, "invalid_scope")
+    val INVALID_SCOPE: ZeroAuthAuthorizationException = authEx(1004, "invalid_scope")
 
     /**
      * An `server_error` OAuth2 error response, equivalent to an HTTP 500 error code, but sent via
      * redirect.
      */
-    val SERVER_ERROR: AuthorizationException = authEx(1005, "server_error")
+    val SERVER_ERROR: ZeroAuthAuthorizationException = authEx(1005, "server_error")
 
     /**
      * A `temporarily_unavailable` OAuth2 error response, equivalent to an HTTP 503 error code, but
      * sent via redirect.
      */
-    val TEMPORARILY_UNAVAILABLE: AuthorizationException = authEx(1006, "temporarily_unavailable")
+    val TEMPORARILY_UNAVAILABLE: ZeroAuthAuthorizationException =
+        authEx(1006, "temporarily_unavailable")
 
     /**
      * An authorization error occurring on the client rather than the server. For example, due to
      * client misconfiguration. This error should be treated as unrecoverable.
      */
-    val CLIENT_ERROR: AuthorizationException = authEx(1007, null)
+    val CLIENT_ERROR: ZeroAuthAuthorizationException = authEx(1007, null)
 
     /**
      * Indicates an OAuth error as per RFC 6749, but the error code is not known to the AppAuth for
      * Android library. It could be a custom error or code, or one from an OAuth extension. The
      * [.error] field provides the exact error string returned by the server.
      */
-    val OTHER: AuthorizationException = authEx(1008, null)
+    val OTHER: ZeroAuthAuthorizationException = authEx(1008, null)
 
     /**
      * Indicates that the response state param did not match the request state param, resulting in
      * the response being discarded.
      */
-    val STATE_MISMATCH: AuthorizationException =
-      generalEx(9, "Response state param did not match request state")
-    private val STRING_TO_EXCEPTION: Map<String, AuthorizationException> =
-      exceptionMapByString(
-        INVALID_REQUEST,
-        UNAUTHORIZED_CLIENT,
-        ACCESS_DENIED,
-        UNSUPPORTED_RESPONSE_TYPE,
-        INVALID_SCOPE,
-        SERVER_ERROR,
-        TEMPORARILY_UNAVAILABLE,
-        CLIENT_ERROR,
-        OTHER
-      )
+    val STATE_MISMATCH: ZeroAuthAuthorizationException =
+        generalEx(9, "Response state param did not match request state")
+    private val STRING_TO_EXCEPTION: Map<String, ZeroAuthAuthorizationException> =
+        exceptionMapByString(
+            INVALID_REQUEST,
+            UNAUTHORIZED_CLIENT,
+            ACCESS_DENIED,
+            UNSUPPORTED_RESPONSE_TYPE,
+            INVALID_SCOPE,
+            SERVER_ERROR,
+            TEMPORARILY_UNAVAILABLE,
+            CLIENT_ERROR,
+            OTHER)
 
     fun exceptionMapByString(
-      vararg exceptions: AuthorizationException?
-    ): Map<String, AuthorizationException> {
-      val map = mutableMapOf<String, AuthorizationException>()
+        vararg exceptions: ZeroAuthAuthorizationException?
+    ): Map<String, ZeroAuthAuthorizationException> {
+      val map = mutableMapOf<String, ZeroAuthAuthorizationException>()
 
       exceptions.forEach { ex -> ex?.error?.let { error -> map[error] = ex } }
 
@@ -307,7 +285,7 @@ data class AuthorizationException(
      * Returns the matching exception type for the provided OAuth2 error string, or [.OTHER] if
      * unknown.
      */
-    fun byString(error: String?): AuthorizationException {
+    fun byString(error: String?): ZeroAuthAuthorizationException {
       val ex = STRING_TO_EXCEPTION[error]
       return ex ?: OTHER
     }

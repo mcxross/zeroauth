@@ -11,7 +11,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.login
+package xyz.mcxross.zero.service
 
 import kotlinx.coroutines.flow.flow
 import xyz.mcxross.zero.client.DefaultClient
@@ -19,17 +19,15 @@ import xyz.mcxross.zero.model.FlowSaltResponse
 import xyz.mcxross.zero.model.SaltRequest
 import xyz.mcxross.zero.model.SaltResponse
 import xyz.mcxross.zero.model.SaltResponseWrapper
-import xyz.mcxross.zero.model.SaltingService
 
 class DefaultSaltingService(override var endPoint: String) : SaltingService {
 
-  private val client = DefaultClient()
+  private val client = DefaultClient(endPoint)
 
   override fun salt(input: SaltRequest): SaltResponseWrapper =
-    FlowSaltResponse(
-      flow {
-        val response = client.request<String, SaltResponse>(endPoint, input.jwtToken)
-        emit(response)
-      }
-    )
+      FlowSaltResponse(
+          flow {
+            val response = client.request<String, SaltResponse>(endPoint, input.jwtToken)
+            emit(response)
+          })
 }

@@ -13,6 +13,9 @@
  */
 package xyz.mcxross.zero.model
 
+import xyz.mcxross.zero.service.ProvingService
+import xyz.mcxross.zero.service.SaltingService
+
 /**
  * Holds references to the salting and proving services used throughout the SDK.
  *

@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
-import xyz.mcxross.zero.internal.Logger
 import xyz.mcxross.zero.repository.TokenRepository
 
 @Serializable
@@ -35,8 +34,6 @@ class TokenViewModel : ViewModel() {
   }
 
   fun fetchToken(code: String, authorizationRequest: AuthorizationRequest) {
-    Logger.debug(
-        "${this::class.simpleName} performing token fetch for request $authorizationRequest")
     fetchJob?.cancel()
     fetchJob =
         viewModelScope.launch {

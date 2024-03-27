@@ -13,6 +13,7 @@
  */
 package xyz.mcxross.zero.extension
 
+import xyz.mcxross.suiness.KeyDetails
 import xyz.mcxross.zero.model.AuthorizationRequest
 import xyz.mcxross.zero.model.AuthorizationServiceConfiguration
 import xyz.mcxross.zero.model.Nonce
@@ -37,7 +38,7 @@ fun ZKLoginRequest.toAuthorizationRequest(): AuthorizationRequest {
 }
 
 fun ZKLoginRequest.toAuthorizationRequest(callback: (AuthorizationRequest) -> Unit) {
-  determineNonce(openIDServiceConfiguration.nonce, endPoint) { nonce ->
+  determineNonce(openIDServiceConfiguration.nonce) { nonce ->
     val authServiceConfig =
         with(openIDServiceConfiguration.provider) {
           AuthorizationServiceConfiguration(
@@ -68,8 +69,33 @@ suspend fun ZKLoginRequest.toAuthorizationRequestAsync(): AuthorizationRequest {
       responseType = "code",
       redirectUri = openIDServiceConfiguration.redirectUri,
       scope = Scope.OpenID,
-      nonce = openIDServiceConfiguration.nonce.generateAsync(endPoint))
+      nonce = openIDServiceConfiguration.nonce.generateAsync())
 }
 
-private fun determineNonce(nonce: Nonce, url: String, callback: (String) -> Unit) =
-    nonce.generate(url, callback)
+fun ZKLoginRequest.toAuthorizationReques(): AuthorizationRequest {
+  val authServiceConfig =
+      with(openIDServiceConfiguration.provider) {
+        AuthorizationServiceConfiguration(
+            authorizationEndpoint, tokenEndpoint, revocationEndpoint, registrationEndpoint)
+      }
+  var nonce = ""
+  openIDServiceConfiguration.nonce.generate { nonce = it }
+  return AuthorizationRequest(
+      configuration = authServiceConfig,
+      clientId = openIDServiceConfiguration.clientId,
+      // TODO: a quick fix for native client (Android) to use code flow
+      responseType = "code",
+      redirectUri = openIDServiceConfiguration.redirectUri,
+      scope = Scope.OpenID,
+      nonce = nonce)
+}
+
+private fun determineNonce(nonce: Nonce, callback: (String) -> Unit) = nonce.generate(callback)
+
+fun KeyDetails.lift(): xyz.mcxross.zero.model.KeyDetails {
+  return xyz.mcxross.zero.model.KeyDetails(address, sk, phrase)
+}
+
+fun xyz.mcxross.zero.model.KeyDetails.lift(): KeyDetails {
+  return KeyDetails(address, sk, phrase)
+}

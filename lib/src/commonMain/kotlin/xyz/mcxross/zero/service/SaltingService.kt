@@ -11,10 +11,13 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero
+package xyz.mcxross.zero.service
 
-import xyz.mcxross.zero.model.ZKLoginRequest
+import xyz.mcxross.zero.model.SaltRequest
+import xyz.mcxross.zero.model.SaltResponseWrapper
 
-interface ZKLoginService {
-  fun zkLogin(zkLoginRequest: ZKLoginRequest): Any
+interface SaltingService {
+  var endPoint: String
+
+  fun salt(input: SaltRequest): SaltResponseWrapper
 }

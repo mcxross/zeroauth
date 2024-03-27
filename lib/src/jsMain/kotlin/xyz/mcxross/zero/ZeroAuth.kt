@@ -21,14 +21,15 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import xyz.mcxross.zero.extension.toAuthorizationRequest
-import xyz.mcxross.zero.login.DefaultProvingService
-import xyz.mcxross.zero.login.DefaultSaltingService
+import xyz.mcxross.zero.service.DefaultProvingService
+import xyz.mcxross.zero.service.DefaultSaltingService
 import xyz.mcxross.zero.model.Ghost
 import xyz.mcxross.zero.model.Nonce
-import xyz.mcxross.zero.model.ProvingService
-import xyz.mcxross.zero.model.SaltingService
+import xyz.mcxross.zero.service.ProvingService
+import xyz.mcxross.zero.service.SaltingService
 import xyz.mcxross.zero.model.ZKLoginRequest
 import xyz.mcxross.zero.oauth.DefaultAuthorizationService
+import xyz.mcxross.zero.service.ZKLoginService
 
 @OptIn(ExperimentalJsExport::class, DelicateCoroutinesApi::class)
 @JsExport
@@ -101,7 +102,7 @@ fun continueWithZKLogin(
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-actual open class DefaultZKLoginService : ZKLoginService {
+actual open class ZeroAuth : ZKLoginService {
 
   override fun zkLogin(zkLoginRequest: ZKLoginRequest) = xyz.mcxross.zero.zkLogin(zkLoginRequest)
 }

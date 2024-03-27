@@ -13,10 +13,10 @@
  */
 import kotlinx.serialization.Serializable
 import xyz.mcxross.zero.Mysten
-import xyz.mcxross.zero.login.DefaultProvingService
-import xyz.mcxross.zero.login.DefaultSaltingService
-import xyz.mcxross.zero.model.ProvingService
-import xyz.mcxross.zero.model.SaltingService
+import xyz.mcxross.zero.service.DefaultProvingService
+import xyz.mcxross.zero.service.DefaultSaltingService
+import xyz.mcxross.zero.service.ProvingService
+import xyz.mcxross.zero.service.SaltingService
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport

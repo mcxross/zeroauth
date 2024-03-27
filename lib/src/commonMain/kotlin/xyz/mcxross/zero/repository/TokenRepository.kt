@@ -14,7 +14,7 @@ class TokenRepository(private val dispatcher: CoroutineDispatcher = Dispatchers.
       authorizationRequest: AuthorizationRequest
   ): Result<TokenInfo> {
     return withContext(dispatcher) {
-      val client = DefaultClient()
+      val client = DefaultClient("")
 
       val tokenInfo: TokenInfo =
           client.submitForm<TokenInfo>(

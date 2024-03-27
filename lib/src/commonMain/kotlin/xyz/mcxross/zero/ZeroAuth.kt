@@ -13,4 +13,6 @@
  */
 package xyz.mcxross.zero
 
-expect open class DefaultZKLoginService : ZKLoginService
+import xyz.mcxross.zero.service.ZKLoginService
+
+open class ZeroAuth : ZKLoginService

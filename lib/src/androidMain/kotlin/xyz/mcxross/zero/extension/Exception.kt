@@ -16,20 +16,21 @@ package xyz.mcxross.zero.extension
 import android.content.Intent
 import android.net.Uri
 import kotlinx.serialization.json.Json
-import xyz.mcxross.zero.exception.AuthorizationException
-import xyz.mcxross.zero.exception.AuthorizationException.Companion.EXTRA_EXCEPTION
-import xyz.mcxross.zero.exception.AuthorizationException.Companion.PARAM_ERROR
-import xyz.mcxross.zero.exception.AuthorizationException.Companion.PARAM_ERROR_DESCRIPTION
-import xyz.mcxross.zero.exception.AuthorizationException.Companion.PARAM_ERROR_URI
-import xyz.mcxross.zero.exception.AuthorizationException.Companion.fromJsonString
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.Companion.EXTRA_EXCEPTION
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.Companion.PARAM_ERROR
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.Companion.PARAM_ERROR_DESCRIPTION
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.Companion.PARAM_ERROR_URI
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException.Companion.fromJsonString
 
-fun AuthorizationException.toIntent(): Intent {
+fun ZeroAuthAuthorizationException.toIntent(): Intent {
   val data = Intent()
-  data.putExtra(EXTRA_EXCEPTION, Json.encodeToString(AuthorizationException.serializer(), this))
+  data.putExtra(
+      EXTRA_EXCEPTION, Json.encodeToString(ZeroAuthAuthorizationException.serializer(), this))
   return data
 }
 
-fun AuthorizationException.fromIntent(data: Intent): AuthorizationException? {
+fun ZeroAuthAuthorizationException.fromIntent(data: Intent): ZeroAuthAuthorizationException? {
   if (data.hasExtra(EXTRA_EXCEPTION)) {
     val jsonStr = data.getStringExtra(EXTRA_EXCEPTION)
     return fromJsonString(jsonStr ?: "")
@@ -37,18 +38,19 @@ fun AuthorizationException.fromIntent(data: Intent): AuthorizationException? {
   return null
 }
 
-fun AuthorizationException.fromOAuthRedirect(redirectUri: Uri): AuthorizationException {
+fun ZeroAuthAuthorizationException.fromOAuthRedirect(
+    redirectUri: Uri
+): ZeroAuthAuthorizationException {
   val error = redirectUri.getQueryParameter(PARAM_ERROR)
   val errorDescription = redirectUri.getQueryParameter(PARAM_ERROR_DESCRIPTION)
   val errorUri = redirectUri.getQueryParameter(PARAM_ERROR_URI)
   val (type, code, _, errorDescription1, errorUri1) =
-    AuthorizationException.AuthorizationRequestErrors.byString(error)
-  return AuthorizationException(
-    type,
-    code,
-    error,
-    errorDescription ?: errorDescription1,
-    ((if (errorUri != null) Uri.parse(errorUri) else errorUri1) as com.eygraber.uri.Uri?),
-    null
-  )
+      ZeroAuthAuthorizationException.AuthorizationRequestErrors.byString(error)
+  return ZeroAuthAuthorizationException(
+      type,
+      code,
+      error,
+      errorDescription ?: errorDescription1,
+      ((if (errorUri != null) Uri.parse(errorUri) else errorUri1) as com.eygraber.uri.Uri?),
+      null)
 }

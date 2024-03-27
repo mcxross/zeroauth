@@ -11,29 +11,26 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.login
+package xyz.mcxross.zero.service
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 import kotlinx.coroutines.flow.flow
 import xyz.mcxross.zero.client.DefaultClient
 import xyz.mcxross.zero.model.FlowProofResponse
-import xyz.mcxross.zero.model.ProofRequest
-import xyz.mcxross.zero.model.ProofResponse
 import xyz.mcxross.zero.model.ProvingResponseWrapper
-import xyz.mcxross.zero.model.ProvingService
+import xyz.mcxross.zero.model.ZKLoginRequest
 
-@OptIn(ExperimentalJsExport::class)
-@JsExport
 class DefaultProvingService(override var endPoint: String) : ProvingService {
 
-  private val client = DefaultClient()
+  private val client = DefaultClient(endPoint)
 
-  override fun prove(input: ProofRequest): ProvingResponseWrapper =
-    FlowProofResponse(
-      flow {
-        val response = client.request<String, ProofResponse>(endPoint, input.toString())
-        emit(response)
-      }
-    )
+  override fun prove(
+      salt: String,
+      input: String,
+      zkLoginRequest: ZKLoginRequest?
+  ): ProvingResponseWrapper =
+      FlowProofResponse(
+          flow {
+            val response = client.makeRequest(salt, input, zkLoginRequest)
+            // emit(response)
+          })
 }

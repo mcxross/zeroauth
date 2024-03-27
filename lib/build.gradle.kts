@@ -16,7 +16,7 @@ plugins {
 
 group = "xyz.mcxross.zero"
 
-version = "1.1.0-SNAPSHOT"
+version = "1.2.2-SNAPSHOT"
 
 repositories {
   mavenCentral()
@@ -90,7 +90,7 @@ kotlin {
         implementation(libs.ktor.client.cio)
         implementation(libs.ktor.server.core)
         implementation(libs.ktor.server.netty)
-        implementation("ch.qos.logback:logback-classic:1.2.3")
+        implementation(libs.logback.classic)
       }
     }
     val jvmTest by getting
@@ -172,8 +172,8 @@ if (secretPropsFile.exists()) {
   ext["signing.keyId"] = System.getenv("SIGNING_KEY_ID")
   ext["signing.password"] = System.getenv("SIGNING_PASSWORD")
   ext["signing.secretKeyRingFile"] = System.getenv("SIGNING_IN_MEMORY_SECRET_KEY")
-  ext["ossrhUsername"] = System.getenv("OSSRH_USERNAME")
-  ext["ossrhPassword"] = System.getenv("OSSRH_PASSWORD")
+  ext["sonatypeUser"] = System.getenv("OSSRH_USERNAME")
+  ext["sonatypePass"] = System.getenv("OSSRH_PASSWORD")
 }
 
 fun getExtraString(name: String) = ext[name]?.toString()
@@ -223,6 +223,4 @@ publishing {
   }
 }
 
-signing {
-  // sign(publishing.publications)
-}
+signing { sign(publishing.publications) }

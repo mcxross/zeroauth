@@ -24,7 +24,7 @@ import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
-import xyz.mcxross.zero.exception.AuthorizationException
+import xyz.mcxross.zero.exception.ZeroAuthAuthorizationException
 import xyz.mcxross.zero.extension.toIntent
 import xyz.mcxross.zero.extension.toZeroUri
 import xyz.mcxross.zero.internal.Logger
@@ -106,12 +106,12 @@ import xyz.mcxross.zero.model.AuthorizationManagementResponse
  *   [DefaultAuthorizationService.performAuthorizationRequest] or
  *   [DefaultAuthorizationService.performEndSessionRequest], then the pending intent provided for
  *   completion of the authorization flow is invoked, providing the decoded
- *   [AuthorizationManagementResponse] or [AuthorizationException] as appropriate. The
+ *   [AuthorizationManagementResponse] or [ZeroAuthAuthorizationException] as appropriate. The
  *   AuthorizationManagementActivity finishes, removing itself from the back stack.
  * - Step S3b: If this activity was invoked via an intent returned by
  *   [DefaultAuthorizationService.getAuthorizationRequestIntent], then this activity calls
  *   [Activity.setResult] with [Activity.RESULT_OK] and a data intent containing the
- *   [AuthorizationResponse] or [AuthorizationException] as appropriate. The
+ *   [AuthorizationResponse] or [ZeroAuthAuthorizationException] as appropriate. The
  *   AuthorizationManagementActivity finishes, removing itself from the back stack.
  */
 class AuthorizationManagementActivity : AppCompatActivity() {
@@ -196,8 +196,8 @@ class AuthorizationManagementActivity : AppCompatActivity() {
   private fun handleAuthorizationCanceled() {
     Logger.debug("Authorization flow canceled by user")
     val cancelData: Intent =
-        AuthorizationException.fromTemplate(
-                AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW, null)
+        ZeroAuthAuthorizationException.fromTemplate(
+                ZeroAuthAuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW, null)
             .toIntent()
     sendResult(cancelIntent, cancelData, RESULT_CANCELED)
   }
@@ -205,8 +205,8 @@ class AuthorizationManagementActivity : AppCompatActivity() {
   private fun handleBrowserNotFound() {
     Logger.debug("Authorization flow canceled due to missing browser")
     val cancelData: Intent =
-        AuthorizationException.fromTemplate(
-                AuthorizationException.GeneralErrors.PROGRAM_CANCELED_AUTH_FLOW, null)
+        ZeroAuthAuthorizationException.fromTemplate(
+                ZeroAuthAuthorizationException.GeneralErrors.PROGRAM_CANCELED_AUTH_FLOW, null)
             .toIntent()
     sendResult(cancelIntent, cancelData, RESULT_CANCELED)
   }
@@ -240,7 +240,7 @@ class AuthorizationManagementActivity : AppCompatActivity() {
     } catch (ex: Exception) {
       sendResult(
           cancelIntent,
-          AuthorizationException.AuthorizationRequestErrors.INVALID_REQUEST.toIntent(),
+          ZeroAuthAuthorizationException.AuthorizationRequestErrors.INVALID_REQUEST.toIntent(),
           RESULT_CANCELED)
     }
   }
@@ -258,8 +258,9 @@ class AuthorizationManagementActivity : AppCompatActivity() {
     val safeResponseUri =
         responseUri ?: throw IllegalArgumentException("Response URI cannot be null")
 
-    return if (safeResponseUri.queryParameterNames.contains(AuthorizationException.PARAM_ERROR)) {
-      AuthorizationException.fromOAuthRedirect(safeResponseUri.toZeroUri()).toIntent()
+    return if (safeResponseUri.queryParameterNames.contains(
+        ZeroAuthAuthorizationException.PARAM_ERROR)) {
+      ZeroAuthAuthorizationException.fromOAuthRedirect(safeResponseUri.toZeroUri()).toIntent()
     } else {
       val response =
           AuthorizationManagementUtil.responseWith(authRequest, safeResponseUri.toZeroUri())
@@ -279,7 +280,8 @@ class AuthorizationManagementActivity : AppCompatActivity() {
                 "State returned in authorization response (%s) does not match state from request (%s) - discarding response",
                 response.state,
                 authRequest?.state)
-            return AuthorizationException.AuthorizationRequestErrors.STATE_MISMATCH.toIntent()
+            return ZeroAuthAuthorizationException.AuthorizationRequestErrors.STATE_MISMATCH
+                .toIntent()
           }
       response.toIntent()
     }

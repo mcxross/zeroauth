@@ -18,23 +18,57 @@ import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
+import xyz.mcxross.suiness.getExtendedEphemeralPublicKey
+import xyz.mcxross.zero.model.DefaultProofRequest
+import xyz.mcxross.zero.model.Nonce
+import xyz.mcxross.zero.model.Proof
+import xyz.mcxross.zero.model.ZKLoginRequest
 
-class DefaultClient : Client {
+class DefaultClient(val url: String) : Client {
   val client = HttpClient(defaultEngine) { install(ContentNegotiation) { json() } }
+
+  suspend fun makeRequest(salt: String, jwt: String, zkLoginRequest: ZKLoginRequest?): Proof {
+    val response: HttpResponse =
+        client.post("https://prover-dev.mystenlabs.com/v1") {
+          contentType(ContentType.Application.Json)
+          if (zkLoginRequest != null &&
+              zkLoginRequest.openIDServiceConfiguration.nonce is Nonce.FromComponents) {
+            setBody(
+                DefaultProofRequest(
+                    jwt,
+                    getExtendedEphemeralPublicKey(
+                        zkLoginRequest.openIDServiceConfiguration.nonce.kp.sk),
+                    zkLoginRequest.openIDServiceConfiguration.nonce.maxEpoch,
+                    zkLoginRequest.openIDServiceConfiguration.nonce.randomness,
+                    salt))
+          }
+        }
+
+    client.close()
+    return Json.decodeFromString(serializer(), response.bodyAsText())
+  }
 
   suspend inline fun <reified T, reified U> request(
       url: String,
       request: T,
-  ): U {
-    val response: U =
-        client
-            .post(url) {
-              contentType(ContentType.Application.Json)
-              setBody(request)
-            }
-            .body()
+  ): U? {
+    var response: U? = null
+    try {
+      response =
+          client
+              .post(url) {
+                contentType(ContentType.Application.Json)
+                setBody(request)
+              }
+              .body()
+    } catch (e: Exception) {
+      println("sss $e")
+    }
     return response
   }
 

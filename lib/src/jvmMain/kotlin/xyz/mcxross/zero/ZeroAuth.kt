@@ -11,6 +11,7 @@ import xyz.mcxross.zero.feedback.callback.ZKLoginFeedback
 import xyz.mcxross.zero.model.ZKLoginRequest
 import xyz.mcxross.zero.model.toUri
 import xyz.mcxross.zero.server.DefaultServer
+import xyz.mcxross.zero.service.ZKLoginService
 
 fun zkLogin(zkLoginRequest: ZKLoginRequest, zkLoginFeedback: ZKLoginFeedback? = null) =
     runBlocking {
@@ -41,7 +42,7 @@ fun zkLogin(zkLoginRequest: ZKLoginRequest, zkLoginFeedback: ZKLoginFeedback? = 
     }
 
 @Serializable
-actual open class DefaultZKLoginService : ZKLoginService {
+actual open class ZeroAuth : ZKLoginService {
   override fun zkLogin(zkLoginRequest: ZKLoginRequest): Any =
       xyz.mcxross.zero.zkLogin(zkLoginRequest)
 }

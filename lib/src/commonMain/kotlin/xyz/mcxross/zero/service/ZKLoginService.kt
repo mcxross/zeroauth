@@ -11,15 +11,6 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
+package xyz.mcxross.zero.service
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-interface ProvingService {
-  var endPoint: String
-
-  fun prove(input: ProofRequest): ProvingResponseWrapper
-}
+interface ZKLoginService

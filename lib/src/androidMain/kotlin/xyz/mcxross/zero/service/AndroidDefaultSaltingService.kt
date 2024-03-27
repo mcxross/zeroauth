@@ -11,7 +11,7 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.login
+package xyz.mcxross.zero.service
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
@@ -20,23 +20,25 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import xyz.mcxross.zero.client.DefaultClient
-import xyz.mcxross.zero.model.LiveDataProofResponse
-import xyz.mcxross.zero.model.ProofRequest
-import xyz.mcxross.zero.model.ProofResponse
-import xyz.mcxross.zero.model.ProvingResponseWrapper
-import xyz.mcxross.zero.model.ProvingService
+import xyz.mcxross.zero.model.LiveDataSaltResponse
+import xyz.mcxross.zero.model.SaltRequest
+import xyz.mcxross.zero.model.SaltResponse
+import xyz.mcxross.zero.model.SaltResponseWrapper
 
-class AndroidDefaultProvingService(override var endPoint: String) : ProvingService {
+class AndroidDefaultSaltingService(
+    override var endPoint: String,
+    var salt: String = "129390038577185583942388216820280642146"
+) : SaltingService {
 
   var lifecycleOwner: LifecycleOwner? = null
-  private val client = DefaultClient()
+  private val client = DefaultClient(endPoint)
 
-  override fun prove(input: ProofRequest): ProvingResponseWrapper {
-    val liveData = MutableLiveData<ProofResponse?>()
+  override fun salt(input: SaltRequest): SaltResponseWrapper {
+    val liveData = MutableLiveData<SaltResponse?>()
     lifecycleOwner?.lifecycleScope?.launch(Dispatchers.IO) {
-      val response = client.request<ProofRequest, ProofResponse>(endPoint, input)
+      val response = client.request<String, SaltResponse>(endPoint, input.jwtToken)
       withContext(Dispatchers.Main) { liveData.value = response }
     }
-    return LiveDataProofResponse(liveData)
+    return LiveDataSaltResponse(liveData)
   }
 }

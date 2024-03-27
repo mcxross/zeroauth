@@ -13,7 +13,4 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
-
-@OptIn(ExperimentalJsExport::class) @JsExport interface ProvingResponseWrapper
+interface ProvingResponseWrapper

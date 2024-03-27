@@ -11,14 +11,13 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import xyz.mcxross.zero.DefaultZKLoginService
+package xyz.mcxross.zero.service
+
+import xyz.mcxross.zero.model.ProvingResponseWrapper
 import xyz.mcxross.zero.model.ZKLoginRequest
 
-@OptIn(ExperimentalJsExport::class)
-@JsExport
-@JsName("DefaultZKLoginService")
-class DefaultZKLoginService :
-  DefaultZKLoginService() {
-  override fun zkLogin(zkLoginRequest: ZKLoginRequest) =
-    xyz.mcxross.zero.zkLogin(zkLoginRequest)
+interface ProvingService {
+  var endPoint: String
+
+  fun prove(salt: String, input: String, zkLoginRequest: ZKLoginRequest?): ProvingResponseWrapper
 }

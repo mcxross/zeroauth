@@ -15,4 +15,4 @@ package xyz.mcxross.zero.model
 
 import androidx.lifecycle.LiveData
 
-class LiveDataProofResponse(val liveData: LiveData<ProofResponse?>) : ProvingResponseWrapper
+class LiveDataProofResponse(val liveData: LiveData<Proof?>) : ProvingResponseWrapper

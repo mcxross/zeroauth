@@ -14,19 +14,15 @@
 package xyz.mcxross.zero.model
 
 import kotlinx.serialization.Serializable
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
 
-@OptIn(ExperimentalJsExport::class)
-@JsExport
 interface ProofRequest
 
 @Serializable
 data class DefaultProofRequest(
-  val jwtToken: String,
-  val extendedEphemeralPublicKey: String,
-  val maxEpoch: Int,
-  val jwtRandomness: String,
-  val salt: String,
-  val keyClaimName: String,
+    val jwt: String,
+    val extendedEphemeralPublicKey: String,
+    val maxEpoch: Int,
+    val jwtRandomness: String,
+    val salt: String,
+    val keyClaimName: String = "sub",
 ) : ProofRequest

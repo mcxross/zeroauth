@@ -11,24 +11,14 @@
  * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package xyz.mcxross.zero.model
-
-import kotlinx.serialization.Serializable
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsExport
+import xyz.mcxross.zero.ZeroAuth
+import xyz.mcxross.zero.model.ZKLoginRequest
 
 @OptIn(ExperimentalJsExport::class)
 @JsExport
-interface ProofResponse
-
-@Serializable
-data class ProofPoints(val a: List<String>, val b: List<List<String>>, val c: List<String>)
-
-@Serializable data class IssBase64Details(val value: String, val indexMod4: Int)
-
-@Serializable
-data class DefaultProofResponse(
-  val proofPoints: ProofPoints,
-  val issBase64Details: IssBase64Details,
-  val headerBase64: String
-) : ProofResponse
+@JsName("DefaultZKLoginService")
+class ZeroAuth :
+  ZeroAuth() {
+  override fun zkLogin(zkLoginRequest: ZKLoginRequest) =
+    xyz.mcxross.zero.zkLogin(zkLoginRequest)
+}

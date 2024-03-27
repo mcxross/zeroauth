@@ -13,21 +13,63 @@
  */
 package xyz.mcxross.zero.model
 
-import kotlin.js.ExperimentalJsExport
-import kotlin.js.JsName
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import xyz.mcxross.suiness.deriveNewKey
+import xyz.mcxross.suiness.generateNonce
+import xyz.mcxross.suiness.generateRandomness
 import xyz.mcxross.zero.Constant.DEFAULT_MAX_EPOCH
+import xyz.mcxross.zero.extension.lift
 import xyz.mcxross.zero.rpc.epoch
-import xyz.mcxross.zero.serializer.DynamicSerializer
-import xyz.mcxross.zero.util.generateKey
-import xyz.mcxross.zero.util.generateNonce
-import xyz.mcxross.zero.util.generateRandomness
+import xyz.mcxross.zero.serializer.KeyDetailsSerializer
 
-@OptIn(ExperimentalJsExport::class)
 @Serializable
+sealed class Nonce {
+  abstract fun generate(callback: (String) -> Unit)
+
+  abstract suspend fun generateAsync(): String
+
+  @Serializable
+  data class FromComponents(
+      val endPoint: String = "https://fullnode.devnet.sui.io",
+      @Serializable(with = KeyDetailsSerializer::class) val kp: KeyDetails = newKey(),
+      val maxEpoch: Int = DEFAULT_MAX_EPOCH,
+      val randomness: String = generateRandomness()
+  ) : Nonce() {
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun generate(callback: (String) -> Unit) {
+      GlobalScope.launch {
+        val epoch = epoch(endPoint)
+        callback(generateNonce(kp.sk, (epoch.toInt() + maxEpoch).toULong(), randomness))
+      }
+    }
+
+    override suspend fun generateAsync(): String {
+      val epoch = epoch(endPoint)
+      return generateNonce(kp.sk, (epoch.toInt() + maxEpoch).toULong(), randomness)
+    }
+  }
+
+  @Serializable
+  data class FromStr(val value: String) : Nonce() {
+    override fun generate(callback: (String) -> Unit) {
+      callback(value)
+    }
+
+    override suspend fun generateAsync(): String {
+      return value
+    }
+  }
+}
+
+private fun newKey(): KeyDetails {
+  return deriveNewKey().lift()
+}
+
+// @OptIn(ExperimentalJsExport::class)
+/*@Serializable
 sealed class Nonce {
 
   abstract fun generate(endPoint: String, callback: (String) -> Unit)
@@ -37,22 +79,12 @@ sealed class Nonce {
   @JsName("FromPubKey")
   @Serializable
   data class FromPubKey(
+      val endPoint: String = "https://fullnode.devnet.sui.io",
       @Serializable(with = DynamicSerializer::class) val pk: Any = generateKey(),
       val maximumEpoch: Int = DEFAULT_MAX_EPOCH,
       val randomness: String = generateRandomness()
   ) : Nonce() {
-    @OptIn(DelicateCoroutinesApi::class)
-    override fun generate(endPoint: String, callback: (String) -> Unit) {
-      GlobalScope.launch {
-        val epoch = epoch(endPoint)
-        callback(generateNonce(pk, epoch.toInt() + maximumEpoch, randomness))
-      }
-    }
 
-    override suspend fun generateAsync(endPoint: String): String {
-      val epoch = epoch(endPoint)
-      return generateNonce(pk, epoch.toInt() + maximumEpoch, randomness)
-    }
   }
 
   @JsName("FromSecretKey")
@@ -75,4 +107,4 @@ sealed class Nonce {
       TODO("Not yet implemented")
     }
   }
-}
+}*/

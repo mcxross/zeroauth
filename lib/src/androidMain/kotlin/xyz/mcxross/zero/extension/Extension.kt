@@ -16,8 +16,10 @@ package xyz.mcxross.zero.extension
 
 import android.content.Context
 import android.content.Intent
+import kotlin.jvm.Throws
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
+import xyz.mcxross.zero.exception.ZeroAuthNetworkException
 import xyz.mcxross.zero.model.AuthorizationManagementResponse
 import xyz.mcxross.zero.model.AuthorizationResponse
 import xyz.mcxross.zero.model.AuthorizationResponse.Companion.EXTRA_RESPONSE
@@ -37,6 +39,7 @@ fun AuthorizationResponse.Companion.fromIntent(dataIntent: Intent): Authorizatio
 fun AuthorizationManagementResponse.toIntent(): Intent =
     Intent().apply { putExtra(EXTRA_RESPONSE, Json.encodeToString(serializer(), this@toIntent)) }
 
+@Throws(ZeroAuthNetworkException::class)
 suspend infix fun Context.zkLogin(request: ZKLoginRequest): Intent =
     xyz.mcxross.zero.zkLogin(this, request)
 
